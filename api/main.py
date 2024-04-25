@@ -7,6 +7,7 @@ CORS(app)
 
 methods.init()
 
+# USERS
 @app.route('/users',methods=['GET','POST','PUT','DELETE'])
 def users():
     if request.method == 'GET':
@@ -25,14 +26,14 @@ def users():
         if result=='Success':
             return jsonify({'message': f"User {req_data['name']} successfully updated !"}), 201
         elif result == "NameNotNull":
-            return jsonify({'message': f"User name is already in use !"}), 409
+            return jsonify({'message': "User name is already in use !"}), 409
         else:
             return jsonify({"message":"User not found !"}),404
     elif request.method == 'DELETE':
         req_data = request.get_json()
         result = methods.delete_with_id('users',req_data['id'])
         if result=='Success':
-            return jsonify({'message': f"User successfully deleted !"}), 201
+            return jsonify({'message': "User successfully deleted !"}), 201
         else:
             return jsonify({"message":result}),404
 
@@ -44,6 +45,7 @@ def user(id):
     else:
         return jsonify({'message':"User not found !"}),404
 
+# TABLES
 @app.route('/tables', methods=['GET','POST','PUT','DELETE'])
 def tables():
     if request.method == 'GET':
@@ -62,14 +64,14 @@ def tables():
         if result=='Success':
             return jsonify({'message': f"Table {req_data['name']} successfully updated !"}), 201
         elif result == 'NameNotNull':
-            return jsonify({'message': f"Table name is already in use !"}), 409
+            return jsonify({'message': "Table name is already in use !"}), 409
         else:
             return jsonify({"message":"Table not found !"}),404
     elif request.method == 'DELETE':
         req_data = request.get_json()
         result = methods.delete_with_id('tables',req_data['id'])
         if result=='Success':
-            return jsonify({'message': f"Table successfully deleted !"}), 201
+            return jsonify({'message': "Table successfully deleted !"}), 201
         else:
             return jsonify({"message":"Table not found !"}),404
 
@@ -93,6 +95,45 @@ def table():
         return jsonify(table), 200
     else:
         return jsonify({'message':"Table not found !"}),404
+    
+@app.route('/opening-times',methods=['GET','POST','PUT','DELETE'])
+def openingTimes():
+    if request.method == 'GET':
+        openingTimes = methods.get_all('openingTime')
+        return jsonify(openingTimes), 200
+    # elif request.method == "POST":
+    #     req_data = request.get_json()
+    #     result = methods.add_user(req_data['name'])
+    #     if result == 'Success':
+    #         return jsonify({'message': f"Users {req_data['name']} successfully added !"}), 201
+    #     else :
+    #         return jsonify({"message":result }),409
+    # elif request.method == "PUT":
+    #     req_data = request.get_json()
+    #     result = methods.update_user(req_data['id'],req_data['name'])
+    #     if result=='Success':
+    #         return jsonify({'message': f"User {req_data['name']} successfully updated !"}), 201
+    #     elif result == "NameNotNull":
+    #         return jsonify({'message': "User name is already in use !"}), 409
+    #     else:
+    #         return jsonify({"message":"User not found !"}),404
+    elif request.method == 'DELETE':
+        req_data = request.get_json()
+        result = methods.delete_with_id('openingTime',req_data['id'])
+        if result=='Success':
+            return jsonify({'message': "Time successfully deleted !"}), 201
+        else:
+            return jsonify({"message":result}),404
+        
+@app.route('/day/<id>')
+def getDay(id):
+    data = methods.get_day_openingTime(id)
+    return jsonify(data)
+
+@app.route('/days')
+def getAllDays():
+    data = methods.get_openingTime_for_each_days()
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)
