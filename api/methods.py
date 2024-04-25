@@ -28,6 +28,8 @@ def get_all(db):
     users_list = [dict(row) for row in users]
     return users_list
 
+
+# USERS
 def get_one_user(id):
     connection = get_connection()
     cursor = connection.cursor()
