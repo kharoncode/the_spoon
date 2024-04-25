@@ -9,7 +9,7 @@ def init():
     connection = get_connection()
     cursor = connection.cursor()
     cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
-    cursor.execute("CREATE TABLE IF NOT EXISTS tables (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, size INTEGER NOT NULL);")
+    cursor.execute("CREATE TABLE IF NOT EXISTS tables (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE, size INTEGER NOT NULL);")
     cursor.execute("CREATE TABLE IF NOT EXISTS daysOfTheWeek (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
     # cursor.execute("DROP TABLE openingTime;")
     cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, start_time TEXT, end_time TEXT, FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
@@ -24,21 +24,33 @@ def init():
 def get_all(db):
     connection = get_connection()
     cursor = connection.cursor()
-    users = cursor.execute('SELECT * FROM (?)',(db)).fetchall()
+    users = cursor.execute(f'SELECT * FROM {db}').fetchall()
     users_list = [dict(row) for row in users]
     return users_list
 
 
-# USERS
-def get_one_user(id):
+def get_with_id(db, id):
     connection = get_connection()
     cursor = connection.cursor()
-    user = cursor.execute('SELECT * FROM users WHERE id=(?)',(id,)).fetchone()
-    if user:
-        return dict(user)
+    data = cursor.execute(f'SELECT * FROM {db} WHERE id=(?)',(id,)).fetchone()
+    if data:
+        return dict(data)
     else:
         return None
+    
+def delete_with_id(db, id):
+    connection = get_connection()
+    cursor = connection.cursor()
+    data = cursor.execute(f'SELECT * FROM {db} WHERE id=(?)',(id,)).fetchone()
+    if data:
+        cursor.execute(f'DELETE FROM {db} WHERE id=(?)', (id,))
+        connection.commit()
+        return "Success"
+    else:
+        return "ID not found !"
 
+    
+# USERS
 def add_user(name):
     connection = get_connection()
     cursor = connection.cursor()
@@ -48,26 +60,46 @@ def add_user(name):
         connection.commit()
         return 'Success'
     else:
-        return None
+        return "The user name is already in use"
 
-def update_user(name,id):
+def update_user(id,name):
     connection = get_connection()
     cursor = connection.cursor()
-    user = cursor.execute(f'SELECT * FROM users WHERE id={id}').fetchone()
+    user = cursor.execute('SELECT * FROM users WHERE id=(?)',(id,)).fetchone()
     if user:
-        cursor.execute('UPDATE users SET name=(?) WHERE id=(?)', (name,id,))
-        connection.commit()
-        return "Success"
+        new_name = cursor.execute('SELECT * FROM users WHERE name=(?)',(name,)).fetchone()
+        if not new_name :
+            cursor.execute('UPDATE users SET name=(?) WHERE id=(?)', (name,id,))
+            connection.commit()
+            return "Success"
+        else :
+            return "NameNotNull"
     else:
         return None
 
-def delete_user(id):
+# TABLES
+def add_table(name,size):
     connection = get_connection()
     cursor = connection.cursor()
-    user = cursor.execute(f'SELECT * FROM users WHERE id={id}').fetchone()
-    if user:
-        cursor.execute('DELETE FROM users WHERE id=(?)', (id,))
+    table = cursor.execute('SELECT * FROM users WHERE name=(?)',(name,)).fetchone()
+    if not table:
+        cursor.execute('INSERT INTO tables (name,size) VALUES (?,?)', (name,size,))
         connection.commit()
-        return "Success"
+        return 'Success'
+    else:
+        return None
+
+def update_table(id,name,size):
+    connection = get_connection()
+    cursor = connection.cursor()
+    table = cursor.execute('SELECT * FROM tables WHERE id=(?)',(id,)).fetchone()
+    if table:
+        new_name = cursor.execute('SELECT * FROM tables WHERE name=(?)',(name,)).fetchone()
+        if not new_name:
+            cursor.execute('UPDATE tables SET name=(?), size=(?) WHERE id=(?)', (name,size,id,))
+            connection.commit()
+            return "Success"
+        else:
+            return "NameNotNull"
     else:
         return None
