@@ -21,27 +21,51 @@ def init():
     # connection.commit()
 
 
-def get_all_users():
+def get_all(db):
     connection = get_connection()
     cursor = connection.cursor()
-    users = cursor.execute('SELECT * FROM users').fetchall()
+    users = cursor.execute('SELECT * FROM (?)',(db)).fetchall()
     users_list = [dict(row) for row in users]
     return users_list
+
+def get_one_user(id):
+    connection = get_connection()
+    cursor = connection.cursor()
+    user = cursor.execute('SELECT * FROM users WHERE id=(?)',(id,)).fetchone()
+    if user:
+        return dict(user)
+    else:
+        return None
 
 def add_user(name):
     connection = get_connection()
     cursor = connection.cursor()
-    cursor.execute('INSERT INTO users (name) VALUES (?)', (name,))
-    connection.commit()
+    user = cursor.execute('SELECT * FROM users WHERE name=(?)',(name,)).fetchone()
+    if not user:
+        cursor.execute('INSERT INTO users (name) VALUES (?)', (name,))
+        connection.commit()
+        return 'Success'
+    else:
+        return None
 
 def update_user(name,id):
     connection = get_connection()
     cursor = connection.cursor()
-    cursor.execute('UPDATE users SET name=(?) WHERE id=(?)', (name,id,))
-    connection.commit()
+    user = cursor.execute(f'SELECT * FROM users WHERE id={id}').fetchone()
+    if user:
+        cursor.execute('UPDATE users SET name=(?) WHERE id=(?)', (name,id,))
+        connection.commit()
+        return "Success"
+    else:
+        return None
 
 def delete_user(id):
     connection = get_connection()
     cursor = connection.cursor()
-    cursor.execute('DELETE FROM users WHERE id=(?)', (id,))
-    connection.commit()
+    user = cursor.execute(f'SELECT * FROM users WHERE id={id}').fetchone()
+    if user:
+        cursor.execute('DELETE FROM users WHERE id=(?)', (id,))
+        connection.commit()
+        return "Success"
+    else:
+        return None
