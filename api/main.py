@@ -97,7 +97,7 @@ def table():
         return jsonify({'message':"Table not found !"}),404
     
 # OPENINGTIME
-@app.route('/opening-times',methods=['GET','POST','DELETE'])
+@app.route('/opening-times',methods=['GET','POST'])
 def openingTimes():
     if request.method == 'GET':
         openingTimes = methods.get_all('openingTime')
@@ -118,7 +118,34 @@ def getAllDays():
     return jsonify(data)
 
 # BOOKING
-
+@app.route('/bookings',methods=['GET','POST','PUT','DELETE'])
+def bookings():
+    if request.method == 'GET':
+        users = methods.get_all('booking')
+        return jsonify(users), 200
+    elif request.method == "POST":
+        req_data = request.get_json()
+        result = methods.add_booking(req_data['user_id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        if result['status'] == "Success":
+            return jsonify({'message': result["message"]}), 201
+        else:
+            return jsonify({'message': result["message"]}), 409
+    elif request.method == "PUT":
+        req_data = request.get_json()
+        result = methods.update_booking(req_data['id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        if result=='Success':
+            return jsonify({'message': f"Booking #{req_data['id']} successfully updated !"}), 201
+        elif result == 'TooSmall':
+            return jsonify({'message': "Table too small !"}), 409
+        else:
+            return jsonify({"message":"Booking not found !"}),404
+    elif request.method == 'DELETE':
+        req_data = request.get_json()
+        result = methods.delete_with_id('booking',req_data['id'])
+        if result=='Success':
+            return jsonify({'message': "Booking successfully deleted !"}), 201
+        else:
+            return jsonify({"message":result}),404
 
 if __name__ == '__main__':
     app.run(debug=True)

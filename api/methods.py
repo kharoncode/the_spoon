@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime
 
 def get_connection():
     connection = sqlite3.connect('db_spoon.sqlite')
@@ -13,7 +14,7 @@ def init():
     cursor.execute("CREATE TABLE IF NOT EXISTS daysOfTheWeek (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
     cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, start_time INTEGER, end_time INTEGER, content VARCHAR(20), FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
     # cursor.execute("DROP TABLE booking;")
-    cursor.execute("CREATE TABLE IF NOT EXISTS booking (id INTEGER PRIMARY KEY, user_id INTEGER, table_id INTEGER, date TIMESTAMP, customers_nbr INTEGER, status VARCHAR(15), FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (table_id) REFERENCES tables(id))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS booking (id INTEGER PRIMARY KEY, user_id INTEGER, table_id INTEGER, date TIMESTAMP, customers_nbr INTEGER, status VARCHAR(15), current_date DATE, FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (table_id) REFERENCES tables(id))")
 
     # cursor.execute("INSERT INTO tables (name, size) VALUES ('petit',2), ('moyen',4), ('gros',5);")
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
@@ -171,3 +172,39 @@ def get_openingTime_for_each_days():
     return days_list
 
 # BOOKING
+def add_booking(user_id, table_id,date,customers_nbr,status):
+    connection = get_connection()
+    cursor = connection.cursor()
+    isUser = get_one_with_params('users', 'id', user_id)
+    isTableSize = cursor.execute('SELECT * FROM tables WHERE id=(?) AND size>=(?)',(table_id,customers_nbr,)).fetchone()
+    if isUser and isTableSize and is_booking_available(user_id,table_id,date):
+        cursor.execute('INSERT INTO booking (user_id, table_id, date, customers_nbr, status, current_date) VALUES (?,?,?,?,?,?)', (user_id, table_id,date,customers_nbr,status,datetime.now(),))
+        connection.commit()
+        return {"status":"Success","message":f'Booking #{cursor.lastrowid} is {status}'}
+    else:
+        return {"status":"Invalid","message":'The reservation is not valid'}
+
+def update_booking(id,table_id,date,customers_nbr,status):
+    connection = get_connection()
+    cursor = connection.cursor()
+    isTableSize = cursor.execute('SELECT * FROM tables WHERE id=(?) AND size>=(?)',(table_id,customers_nbr,)).fetchone()
+    booking = cursor.execute('SELECT * FROM booking WHERE id=(?)',(id,)).fetchone()
+    if booking :
+            if isTableSize:
+                cursor.execute('UPDATE booking SET table_id=(?), date=(?), customers_nbr=(?), status=(?) WHERE id=(?)', (table_id,date,customers_nbr,status,id,))
+                connection.commit()
+                return "Success"
+            else:
+                return "TooSmall"
+    else:
+        return None
+    
+def is_booking_available(user_id,table_id,date):
+    connection = get_connection()
+    cursor = connection.cursor()
+    isTable = cursor.execute('SELECT * FROM booking WHERE table_id=(?) AND date>(?) AND date<(?);',(table_id,date-5400,date+5400)).fetchall()
+    isUser = cursor.execute('SELECT * FROM booking WHERE user_id=(?) AND date>(?) AND date<(?);',(user_id,date-5400,date+5400)).fetchall()
+    if len(isTable)>0 or len(isUser)>0:
+        return False
+    else:
+        return True
