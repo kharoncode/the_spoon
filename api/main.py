@@ -38,7 +38,7 @@ def users():
 
 @app.route('/user/<id>', methods=['GET'])
 def user(id):
-    user = methods.get_with_id('users',id)
+    user = methods.get_one_with_params('users',"id",id)
     if user:
         return jsonify(user), 200
     else:
@@ -73,9 +73,22 @@ def tables():
         else:
             return jsonify({"message":"Table not found !"}),404
 
-@app.route('/table/<id>', methods=['GET'])
-def table(id):
-    table = methods.get_with_id('tables',id)
+@app.route('/table', methods=['GET'])
+def table():
+    id = request.args.get('id')
+    name = request.args.get('name')
+    size = request.args.get('size')
+
+    if not id and not name and not size :
+        return jsonify({'message':"Please provide a parameter (id, size or name)"}),400
+
+    if id:
+        table = methods.get_one_with_params('tables','id', id)
+    elif name:
+        table = methods.get_one_with_params('tables','name',name)
+    elif size:
+        table = methods.get_all_with_params('tables','size',size)
+
     if table:
         return jsonify(table), 200
     else:

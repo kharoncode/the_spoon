@@ -29,14 +29,26 @@ def get_all(db):
     return users_list
 
 
-def get_with_id(db, id):
+def get_one_with_params(db, where, params):
     connection = get_connection()
     cursor = connection.cursor()
-    data = cursor.execute(f'SELECT * FROM {db} WHERE id=(?)',(id,)).fetchone()
+    data = cursor.execute(f'SELECT * FROM {db} WHERE {where}=(?)',(params,)).fetchone()
     if data:
         return dict(data)
     else:
         return None
+    
+def get_all_with_params(db, where, params):
+    connection = get_connection()
+    cursor = connection.cursor()
+    data = cursor.execute(f'SELECT * FROM {db} WHERE {where}=(?)',(params,)).fetchall()
+    if data:
+        data_list = [dict(row) for row in data]
+        return data_list
+    else:
+        return None
+    
+
     
 def delete_with_id(db, id):
     connection = get_connection()
@@ -81,7 +93,7 @@ def update_user(id,name):
 def add_table(name,size):
     connection = get_connection()
     cursor = connection.cursor()
-    table = cursor.execute('SELECT * FROM users WHERE name=(?)',(name,)).fetchone()
+    table = cursor.execute('SELECT * FROM tables WHERE name=(?)',(name,)).fetchone()
     if not table:
         cursor.execute('INSERT INTO tables (name,size) VALUES (?,?)', (name,size,))
         connection.commit()
