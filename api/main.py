@@ -1,6 +1,7 @@
 from flask import Flask,jsonify,request
 from flask_cors import CORS
 import methods
+import operator
 
 app = Flask(__name__)
 CORS(app)
@@ -75,12 +76,27 @@ def tables():
         else:
             return jsonify({"message":"Table not found !"}),404
 
+@app.route('/tables/available',methods=['GET'])
+def tables_availables():
+    date = int(request.args.get('date'))
+    if not date:
+        return jsonify({'message':"Please provide a parameters table_id and date"}),400
+    tables_list = methods.get_all('tables')
+    tables_unavailable = methods.tables_occupied_for_date(date)
+    unavailable_ids = []
+    for table in tables_unavailable:
+        unavailable_ids.append(table['table_id'])
+    tables_availables_list = []
+    for table in tables_list:
+        if table['id'] not in unavailable_ids:
+            tables_availables_list.append(table)
+    return jsonify(tables_availables_list), 200
+
 @app.route('/table', methods=['GET'])
 def table():
     id = request.args.get('id')
     name = request.args.get('name')
     size = request.args.get('size')
-
     if not id and not name and not size :
         return jsonify({'message':"Please provide a parameter (id, size or name)"}),400
 
@@ -90,12 +106,12 @@ def table():
         table = methods.get_one_with_params('tables','name',name)
     elif size:
         table = methods.get_all_with_params('tables','size',size)
-
+         
     if table:
         return jsonify(table), 200
     else:
         return jsonify({'message':"Table not found !"}),404
-    
+
 # OPENINGTIME
 @app.route('/opening-times',methods=['GET','POST'])
 def openingTimes():
@@ -121,8 +137,9 @@ def getAllDays():
 @app.route('/bookings',methods=['GET','POST','PUT','DELETE'])
 def bookings():
     if request.method == 'GET':
-        users = methods.get_all('booking')
-        return jsonify(users), 200
+        bookings = methods.get_all('booking')
+        bookings.sort(reverse=True,key=operator.itemgetter('current_date'))
+        return jsonify(bookings), 200
     elif request.method == "POST":
         req_data = request.get_json()
         result = methods.add_booking(req_data['user_id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
@@ -146,6 +163,8 @@ def bookings():
             return jsonify({'message': "Booking successfully deleted !"}), 201
         else:
             return jsonify({"message":result}),404
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

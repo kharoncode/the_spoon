@@ -15,11 +15,12 @@ def init():
     cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, start_time INTEGER, end_time INTEGER, content VARCHAR(20), FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
     # cursor.execute("DROP TABLE booking;")
     cursor.execute("CREATE TABLE IF NOT EXISTS booking (id INTEGER PRIMARY KEY, user_id INTEGER, table_id INTEGER, date TIMESTAMP, customers_nbr INTEGER, status VARCHAR(15), current_date DATE, FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (table_id) REFERENCES tables(id))")
-
+    
     # cursor.execute("INSERT INTO tables (name, size) VALUES ('petit',2), ('moyen',4), ('gros',5);")
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
     # cursor.execute("INSERT INTO openingTime (day_id, start_time, end_time, content) VALUES (1, 660, 840, '11:00-14:00'), (1, 1080, 1260, '18:00-21:00'),(2, 660, 840, '11:00-14:00'), (2, 1080, 1260, '18:00-21:00'),(3, 660, 840, '11:00-14:00'), (3, 1080, 1260, '18:00-21:00'),(4, 660, 840, '11:00-14:00'), (4, 1080, 1260, '18:00-21:00'),(5, 660, 840, '11:00-14:00'), (5, 1080, 1260, '18:00-21:00'),(6, 660, 840, '11:00-14:00'), (6, 1080, 1260, '18:00-21:00'),(7, 660, 840, '11:00-14:00'), (7, 1080, 1260, '18:00-21:00');")
     # connection.commit()
+    connection.close()
 
 
 def get_all(db):
@@ -27,6 +28,7 @@ def get_all(db):
     cursor = connection.cursor()
     users = cursor.execute(f'SELECT * FROM {db}').fetchall()
     users_list = [dict(row) for row in users]
+    connection.close()
     return users_list
 
 
@@ -34,6 +36,7 @@ def get_one_with_params(db, where, params):
     connection = get_connection()
     cursor = connection.cursor()
     data = cursor.execute(f'SELECT * FROM {db} WHERE {where}=(?)',(params,)).fetchone()
+    connection.close()
     if data:
         return dict(data)
     else:
@@ -43,6 +46,7 @@ def get_all_with_params(db, where, params):
     connection = get_connection()
     cursor = connection.cursor()
     data = cursor.execute(f'SELECT * FROM {db} WHERE {where}=(?)',(params,)).fetchall()
+    connection.close()
     if data:
         data_list = [dict(row) for row in data]
         return data_list
@@ -58,8 +62,10 @@ def delete_with_id(db, id):
     if data:
         cursor.execute(f'DELETE FROM {db} WHERE id=(?)', (id,))
         connection.commit()
+        connection.close()
         return "Success"
     else:
+        connection.close()
         return "ID not found !"
 
     
@@ -71,8 +77,10 @@ def add_user(name):
     if not user:
         cursor.execute('INSERT INTO users (name) VALUES (?)', (name,))
         connection.commit()
+        connection.close()
         return 'Success'
     else:
+        connection.close()
         return "The user name is already in use"
 
 def update_user(id,name):
@@ -84,10 +92,13 @@ def update_user(id,name):
         if not new_name :
             cursor.execute('UPDATE users SET name=(?) WHERE id=(?)', (name,id,))
             connection.commit()
+            connection.close()
             return "Success"
         else :
+            connection.close()
             return "NameNotNull"
     else:
+        connection.close()
         return None
 
 # TABLES
@@ -98,8 +109,10 @@ def add_table(name,size):
     if not table:
         cursor.execute('INSERT INTO tables (name,size) VALUES (?,?)', (name,size,))
         connection.commit()
+        connection.close()
         return 'Success'
     else:
+        connection.close()
         return None
 
 def update_table(id,name,size):
@@ -111,10 +124,13 @@ def update_table(id,name,size):
         if not new_name:
             cursor.execute('UPDATE tables SET name=(?), size=(?) WHERE id=(?)', (name,size,id,))
             connection.commit()
+            connection.close()
             return "Success"
         else:
+            connection.close()
             return "NameNotNull"
     else:
+        connection.close()
         return None
 
 # OPENING
@@ -130,6 +146,7 @@ def edit_openingTime(day_id,data):
     else:
         cursor.execute('INSERT INTO openingTime (day_id, start_time, end_time, content) VALUES (?,?,?,?)',(day_id, 0, 0, 'closed',))
     connection.commit()
+    connection.close()
 
     return get_openingTime_for_each_days()
     
@@ -143,8 +160,8 @@ def get_day_openingTime(day_id):
             ON dotw.id = ot.day_id
             WHERE dotw.id=(?)
         ''', (day_id,)).fetchall()
-    
     day_data_list = [dict(row) for row in day_data]
+    connection.close()
     return day_data_list
 
 def get_openingTime_for_each_days():
@@ -156,6 +173,7 @@ def get_openingTime_for_each_days():
             JOIN openingTime ot 
             ON dotw.id = ot.day_id
         ''').fetchall()
+    
     days_list = {
             "lundi": [],
             "mardi": [],
@@ -165,10 +183,11 @@ def get_openingTime_for_each_days():
             "samedi": [],
             "dimanche": []
         }
-    
+ 
     for row in days_data:
         name, start_time, end_time, content = row
         days_list[name].append({"start_time":start_time,"end_time":end_time, "content":content})
+    connection.close()
     return days_list
 
 # BOOKING
@@ -180,6 +199,7 @@ def add_booking(user_id, table_id,date,customers_nbr,status):
     if isUser and isTableSize and is_booking_available(user_id,table_id,date):
         cursor.execute('INSERT INTO booking (user_id, table_id, date, customers_nbr, status, current_date) VALUES (?,?,?,?,?,?)', (user_id, table_id,date,customers_nbr,status,datetime.now(),))
         connection.commit()
+        connection.close()
         return {"status":"Success","message":f'Booking #{cursor.lastrowid} is {status}'}
     else:
         return {"status":"Invalid","message":'The reservation is not valid'}
@@ -193,17 +213,29 @@ def update_booking(id,table_id,date,customers_nbr,status):
             if isTableSize:
                 cursor.execute('UPDATE booking SET table_id=(?), date=(?), customers_nbr=(?), status=(?) WHERE id=(?)', (table_id,date,customers_nbr,status,id,))
                 connection.commit()
+                connection.close()
                 return "Success"
             else:
+                connection.close()
                 return "TooSmall"
     else:
+        connection.close()
         return None
     
+def tables_occupied_for_date(date):
+    connection = get_connection()
+    cursor = connection.cursor()
+    table = cursor.execute('SELECT table_id FROM booking WHERE date>(?) AND date<(?);',(date-5400,date+5400)).fetchall()
+    connection.close()
+    table_list = [dict(row) for row in table]
+    return table_list
+
 def is_booking_available(user_id,table_id,date):
     connection = get_connection()
     cursor = connection.cursor()
     isTable = cursor.execute('SELECT * FROM booking WHERE table_id=(?) AND date>(?) AND date<(?);',(table_id,date-5400,date+5400)).fetchall()
     isUser = cursor.execute('SELECT * FROM booking WHERE user_id=(?) AND date>(?) AND date<(?);',(user_id,date-5400,date+5400)).fetchall()
+    connection.close()
     if len(isTable)>0 or len(isUser)>0:
         return False
     else:
