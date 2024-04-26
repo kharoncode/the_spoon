@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+import time
 
 def get_connection():
     connection = sqlite3.connect('db_spoon.sqlite')
@@ -53,7 +54,6 @@ def get_all_with_params(db, where, params):
     else:
         return None
     
-
     
 def delete_with_id(db, id):
     connection = get_connection()
@@ -202,6 +202,16 @@ def get_dict_days():
 
 
 # BOOKING
+
+def delete_pending_booking(id):
+    time.sleep(60)
+    booking = get_one_with_params("booking", "id", id)
+    if booking['status'] == 'pending':
+        delete_with_id('booking', id)
+        return 'time_out'
+    else :
+        return None
+
 def add_booking(user_id, table_id,date,customers_nbr,status):
     connection = get_connection()
     cursor = connection.cursor()
@@ -210,10 +220,16 @@ def add_booking(user_id, table_id,date,customers_nbr,status):
     if isUser and isTableSize and is_booking_available(user_id,table_id,date):
         cursor.execute('INSERT INTO booking (user_id, table_id, date, customers_nbr, status, current_date) VALUES (?,?,?,?,?,?)', (user_id, table_id,date,customers_nbr,status,datetime.now(),))
         connection.commit()
+        if status == 'pending':
+            result = delete_pending_booking(cursor.lastrowid)
+            if result == 'time_out' :
+                return {"status":'time_out',"message":f'Booking #{cursor.lastrowid} is time_out'}
+        elif status == 'validate' :
+            update_booking(cursor.lastrowid,table_id,date,customers_nbr,status)
         connection.close()
-        return {"status":"Success","message":f'Booking #{cursor.lastrowid} is {status}'}
+        return {"status":"success","message":f'Booking #{cursor.lastrowid} is {status}'}
     else:
-        return {"status":"Invalid","message":'The reservation is not valid'}
+        return {"status":"invalid","message":'The reservation is not valid'}
 
 def update_booking(id,table_id,date,customers_nbr,status):
     connection = get_connection()

@@ -3,6 +3,7 @@ from flask_cors import CORS
 import methods
 import operator
 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -161,6 +162,8 @@ def getDays_list():
     return jsonify(days_list)
 
 # BOOKING
+
+
 @app.route('/bookings',methods=['GET','POST','PUT','DELETE'])
 def bookings():
     if request.method == 'GET':
@@ -170,10 +173,10 @@ def bookings():
     elif request.method == "POST":
         req_data = request.get_json()
         result = methods.add_booking(req_data['user_id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
-        if result['status'] == "Success":
-            return jsonify({'message': result["message"]}), 201
+        if result['status'] == "invalid":
+            return jsonify(result), 409
         else:
-            return jsonify({'message': result["message"]}), 409
+            return jsonify(result), 201
     elif request.method == "PUT":
         req_data = request.get_json()
         result = methods.update_booking(req_data['id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
