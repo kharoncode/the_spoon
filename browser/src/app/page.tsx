@@ -1,4 +1,5 @@
 'use client';
+import LoginForm from '@/components/LoginForm';
 import useFetch from '@/utils/useFetch';
 import React from 'react';
 
@@ -14,6 +15,7 @@ export default function Home() {
    return (
       <React.Fragment>
          <h1>The Spoon</h1>
+         <LoginForm />
          {!isLoading &&
             users &&
             users.map((el, index) => {
