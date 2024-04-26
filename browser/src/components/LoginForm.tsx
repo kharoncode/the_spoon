@@ -37,9 +37,9 @@ const LoginForm = () => {
    return (
       <form
          onSubmit={handleSubmit}
-         className="w-80 p-5 flex flex-col items-center gap-5 bg-blue-200 border border-blue-500 rounded-xl"
+         className="w-80 p-4 flex flex-col items-center gap-5 bg-blue-200 border border-blue-500 rounded-xl"
       >
-         <label htmlFor="userName">Utilisateurs :</label>
+         <label htmlFor="userName">Utilisateur :</label>
          <input
             type="text"
             id="userName"
