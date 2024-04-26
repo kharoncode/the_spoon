@@ -77,7 +77,7 @@ def tables():
             return jsonify({"message":"Table not found !"}),404
 
 @app.route('/tables/available',methods=['GET'])
-def tables_availables():
+def tables_availables_by_date():
     date = int(request.args.get('date'))
     if not date:
         return jsonify({'message':"Please provide a parameters table_id and date"}),400
@@ -124,14 +124,41 @@ def openingTimes():
         return jsonify(result), 201
         
 @app.route('/day/<id>')
-def getDay(id):
+def getDay_by_id(id):
     data = methods.get_day_openingTime(id)
     return jsonify(data)
+
+@app.route('/day/list/<id>')
+def getDay_by_id_list(id):
+    data = methods.get_day_openingTime(id)
+    list = []
+    for hours in data:
+        for i in range(hours['start_time'],hours['end_time']-15,15):
+            list.append(i)
+    return jsonify(list)
 
 @app.route('/days')
 def getAllDays():
     data = methods.get_openingTime_for_each_days()
     return jsonify(data)
+
+@app.route('/days/list')
+def getDays_list():
+    data = methods.get_all('openingTime')
+    days_list = {
+            "lundi": [],
+            "mardi": [],
+            "mercredi": [],
+            "jeudi": [],
+            "vendredi": [],
+            "samedi": [],
+            "dimanche": []
+        }
+    days = methods.get_dict_days()
+    for el in data:
+        for i in range(el['start_time'],el['end_time']-15,15):
+            days_list[days[el['day_id']]].append(i)
+    return jsonify(days_list)
 
 # BOOKING
 @app.route('/bookings',methods=['GET','POST','PUT','DELETE'])

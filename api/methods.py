@@ -12,13 +12,13 @@ def init():
     cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
     cursor.execute("CREATE TABLE IF NOT EXISTS tables (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE, size INTEGER NOT NULL);")
     cursor.execute("CREATE TABLE IF NOT EXISTS daysOfTheWeek (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
+    # cursor.execute("DROP TABLE openingTime;")
     cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, start_time INTEGER, end_time INTEGER, content VARCHAR(20), FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
-    # cursor.execute("DROP TABLE booking;")
     cursor.execute("CREATE TABLE IF NOT EXISTS booking (id INTEGER PRIMARY KEY, user_id INTEGER, table_id INTEGER, date TIMESTAMP, customers_nbr INTEGER, status VARCHAR(15), current_date DATE, FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (table_id) REFERENCES tables(id))")
     
     # cursor.execute("INSERT INTO tables (name, size) VALUES ('petit',2), ('moyen',4), ('gros',5);")
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
-    # cursor.execute("INSERT INTO openingTime (day_id, start_time, end_time, content) VALUES (1, 660, 840, '11:00-14:00'), (1, 1080, 1260, '18:00-21:00'),(2, 660, 840, '11:00-14:00'), (2, 1080, 1260, '18:00-21:00'),(3, 660, 840, '11:00-14:00'), (3, 1080, 1260, '18:00-21:00'),(4, 660, 840, '11:00-14:00'), (4, 1080, 1260, '18:00-21:00'),(5, 660, 840, '11:00-14:00'), (5, 1080, 1260, '18:00-21:00'),(6, 660, 840, '11:00-14:00'), (6, 1080, 1260, '18:00-21:00'),(7, 660, 840, '11:00-14:00'), (7, 1080, 1260, '18:00-21:00');")
+    # cursor.execute("INSERT INTO openingTime (day_id, start_time, end_time, content) VALUES (1, 660, 840, '11:00-14:00'), (1, 1080, 1260, '18:00-21:00'),(2, 660, 840, '11:00-14:00'), (2, 1080, 1260, '18:00-21:00'),(3, 660, 840, '11:00-14:00'), (3, 1080, 1260, '18:00-21:00'),(4, 660, 840, '11:00-14:00'), (4, 1080, 1260, '18:00-21:00'),(5, 660, 840, '11:00-14:00'), (5, 1080, 1260, '18:00-21:00'),(6, 660, 840, '11:00-14:00'), (6, 1080, 1260, '18:00-21:00'),(7, 0, 0, 'Closed');")
     # connection.commit()
     connection.close()
 
@@ -189,6 +189,17 @@ def get_openingTime_for_each_days():
         days_list[name].append({"start_time":start_time,"end_time":end_time, "content":content})
     connection.close()
     return days_list
+
+def get_dict_days():
+    connection = get_connection()
+    cursor = connection.cursor()
+    days_list = cursor.execute('SELECT * FROM daysOfTheWeek').fetchall()
+    dict_list = {}
+    for row in days_list:
+        dict_list[row['id']]=row['name']
+    connection.close()
+    return dict_list
+
 
 # BOOKING
 def add_booking(user_id, table_id,date,customers_nbr,status):
