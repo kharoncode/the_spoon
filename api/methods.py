@@ -78,10 +78,10 @@ def add_user(name):
         cursor.execute('INSERT INTO users (name) VALUES (?)', (name,))
         connection.commit()
         connection.close()
-        return 'Success'
+        return {"status":"success","id":cursor.lastrowid}
     else:
         connection.close()
-        return "The user name is already in use"
+        return {"status":"error","message":"The user name is already in use"}
 
 def update_user(id,name):
     connection = get_connection()

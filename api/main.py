@@ -18,10 +18,10 @@ def users():
     elif request.method == "POST":
         req_data = request.get_json()
         result = methods.add_user(req_data['name'])
-        if result == 'Success':
-            return jsonify({'message': f"Users {req_data['name']} successfully added !"}), 201
+        if result['status'] == 'success':
+            return jsonify({'id':result['id'],'message': f"Users {req_data['name']} successfully added !"}), 201
         else :
-            return jsonify({"message":result }),409
+            return jsonify({"message":result['message'] }),409
     elif request.method == "PUT":
         req_data = request.get_json()
         result = methods.update_user(req_data['id'],req_data['name'])
@@ -39,13 +39,28 @@ def users():
         else:
             return jsonify({"message":result}),404
 
-@app.route('/user/<id>', methods=['GET'])
-def user(id):
-    user = methods.get_one_with_params('users',"id",id)
+@app.route('/user/search', methods=['GET'])
+def get_user():
+    id = request.args.get('id')
+    name = request.args.get('name')
+    if not id and not name:
+        return jsonify({'message':"Please provide a parameter (id, size or name)"}),400
+
+    if id:
+        user = methods.get_one_with_params('users','id', id)
+    elif name:
+        user = methods.get_one_with_params('users','name',name)
+         
     if user:
         return jsonify(user), 200
     else:
         return jsonify({'message':"User not found !"}),404
+    
+    # user = methods.get_one_with_params('users',"id",id)
+    # if user:
+    #     return jsonify(user), 200
+    # else:
+    #     return jsonify({'message':"User not found !"}),404
 
 # TABLES
 @app.route('/tables', methods=['GET','POST','PUT','DELETE'])
