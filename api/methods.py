@@ -19,7 +19,7 @@ def init():
     
     # cursor.execute("INSERT INTO tables (name, size) VALUES ('petit',2), ('moyen',4), ('gros',5);")
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
-    # cursor.execute("INSERT INTO openingTime (day_id, day_time, start_time, end_time, content) VALUES (1, 'lunch', 660, 840, '11:00-14:00'), (1, 'dinner', 660, 1260, '18:00-21:00'),(2, 'lunch', 660, 840, '11:00-14:00'), (2, 'dinner', 660, 1260, '18:00-21:00'),(3, 'lunch', 660, 840, '11:00-14:00'), (3, 'dinner', 660, 1260, '18:00-21:00'),(4, 'lunch', 660, 840, '11:00-14:00'), (4, 'dinner', 660, 1260, '18:00-21:00'),(5, 'lunch', 660, 840, '11:00-14:00'), (5, 'dinner', 660, 1260, '18:00-21:00'),(6, 'lunch', 660, 840, '11:00-14:00'), (6, 'dinner', 660, 1260, '18:00-21:00'),(7, 'lunch', 0, 0, 'Closed'),(7, 'dinner', 0, 0, 'Closed');")
+    # cursor.execute("INSERT INTO openingTime (day_id, day_time, start_time, end_time, content) VALUES (1, 'lunch', 660, 840, '11:00-14:00'), (1, 'dinner', 660, 1260, '18:00-21:00'),(2, 'lunch', 660, 840, '11:00-14:00'), (2, 'dinner', 660, 1260, '18:00-21:00'),(3, 'lunch', 660, 840, '11:00-14:00'), (3, 'dinner', 660, 1260, '18:00-21:00'),(4, 'lunch', 660, 840, '11:00-14:00'), (4, 'dinner', 660, 1260, '18:00-21:00'),(5, 'lunch', 660, 840, '11:00-14:00'), (5, 'dinner', 660, 1260, '18:00-21:00'),(6, 'lunch', 660, 840, '11:00-14:00'), (6, 'dinner', 660, 1260, '18:00-21:00'),(7, 'lunch', 0, 0, 'closed'),(7, 'dinner', 0, 0, 'closed');")
     # connection.commit()
     connection.close()
 
