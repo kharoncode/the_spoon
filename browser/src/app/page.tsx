@@ -75,19 +75,17 @@ export default function Home() {
                   days_list.map((day) => (
                      <div key={day} className="flex gap-2">
                         <h3>{day.toUpperCase()} :</h3>
-                        {data_ot[day][0].content !== 'Closed' &&
-                        data_ot[day][1].content !== 'Closed' ? (
-                           <p>
-                              {data_ot[day][0].content !== 'Closed' &&
-                                 data_ot[day][0].content}{' '}
-                              {data_ot[day][0].content !== 'Closed' &&
-                                 data_ot[day][1].content !== 'Closed' &&
-                                 '/'}{' '}
-                              {data_ot[day][1].content !== 'Closed' &&
-                                 data_ot[day][1].content}
-                           </p>
+                        {data_ot[day][0].content === 'closed' &&
+                        data_ot[day][1].content === 'closed' ? (
+                           <p>Fermée</p>
                         ) : (
-                           'Closed'
+                           data_ot[day].map((el, index) =>
+                              el.content === 'closed' ? (
+                                 <></>
+                              ) : (
+                                 <p key={index}>{el.content}</p>
+                              )
+                           )
                         )}
                      </div>
                   ))}

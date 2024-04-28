@@ -1,7 +1,7 @@
 'use client';
+import OpeningTimeSetting from '@/components/openingTimeSetting/OpeningTimeSetting';
 import useFetch from '@/utils/useFetch';
 import React, { useState } from 'react';
-import OpeningTimeSetting from '@/components/OpeningTimeSetting';
 
 type Days_list = {
    [key: string]: [
@@ -28,6 +28,7 @@ const Setting = () => {
    );
 
    const [body, setBody] = useState<Opening>([]);
+   const [isSubmit, setIsSubmit] = useState(false);
 
    const days_list = [
       'lundi',
@@ -49,13 +50,35 @@ const Setting = () => {
          body: JSON.stringify(result),
       })
          .then((res) => res.json())
-         .then((data) => console.log(data));
+         .then(() => {
+            setBody([]);
+            setIsSubmit(true);
+            setTimeout(() => {
+               setIsSubmit(false);
+            }, 2000);
+         });
    };
 
    return (
       <React.Fragment>
-         <h2>Ouverture</h2>
-         <button onClick={handleSubmit}>Submit</button>
+         <div className="w-full p-2 flex flex-col items-center gap-5">
+            <h2 className="text-2xl text-bold">
+               {"Modifier les Heures/Jours d'Ouverture"}
+            </h2>
+            <button
+               onClick={handleSubmit}
+               className="p-3 bg-indigo-600 rounded-xl text-white font-medium shadow-inner  hover:shadow-black"
+            >
+               Valider les modifications
+            </button>
+            <p
+               className={`p-3 bg-green-100 rounded-xl border-2 border-green-400 text-center duration-500 ${
+                  !isSubmit && 'opacity-0'
+               }`}
+            >
+               Les modifications ont été appliqué.
+            </p>
+         </div>
          <div className="w-full p-5 flex justify-center flex-col items-center gap-16">
             {!isLoading &&
                data &&
@@ -71,8 +94,8 @@ const Setting = () => {
                               <OpeningTimeSetting
                                  key={`${day}_${index}`}
                                  day_time={day_time.day_time}
-                                 start_time={day_time.start_time / 60}
-                                 end_time={day_time.end_time / 60}
+                                 start_time={day_time.start_time}
+                                 end_time={day_time.end_time}
                                  content={day_time.content}
                                  setBody={setBody}
                                  id={day_time.id}

@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import MultiRangeSlider from 'multi-range-slider-react';
+import styles from './openingTimeSetting.module.css';
 
 type Opening = {
    id: number;
@@ -45,16 +46,16 @@ const OpeningTimeSetting = ({
          list: ['18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00'],
       },
    };
-   const [minValue, set_minValue] = useState(start_time);
-   const [maxValue, set_maxValue] = useState(end_time);
+   const [minValue, set_minValue] = useState(start_time / 60);
+   const [maxValue, set_maxValue] = useState(end_time / 60);
    const [isOpen, setIsOpen] = useState<boolean>(
-      content === 'Closed' ? false : true
+      content === 'closed' ? false : true
    );
 
    const formatTime = (time: number) => {
       const timeList = time.toString().split('.');
       return `${timeList[0] != '24' ? timeList[0] : '00'}:${
-         timeList[1] ? Number(`0.${timeList[1]}`) * 60 : '00'
+         timeList[1] ? Number(`0.${timeList[1]}`) : '00'
       }`;
    };
 
@@ -68,7 +69,22 @@ const OpeningTimeSetting = ({
             end_time: e.maxValue * 60,
             content: isOpen
                ? `${formatTime(e.minValue)}-${formatTime(e.maxValue)}`
-               : 'Closed',
+               : 'closed',
+         };
+         return prev;
+      });
+   };
+
+   const toggle = () => {
+      setIsOpen(!isOpen);
+      setBody((prev) => {
+         prev[id] = {
+            id: id,
+            start_time: minValue * 60,
+            end_time: maxValue * 60,
+            content: !isOpen
+               ? `${formatTime(minValue)}-${formatTime(maxValue)}`
+               : 'closed',
          };
          return prev;
       });
@@ -77,8 +93,7 @@ const OpeningTimeSetting = ({
    const { min, max } = day_time_list[day_time];
 
    return (
-      <div className="w-full flex justify-center gap-5">
-         index = {id}
+      <div className="w-full flex justify-center items-center gap-5">
          <div className="min-w-80 w-1/3 flex flex-col gap-2">
             <h4 className="capitalize">
                {day_time} : {formatTime(minValue)} - {formatTime(maxValue)}
@@ -86,8 +101,8 @@ const OpeningTimeSetting = ({
             <MultiRangeSlider
                min={min}
                max={max}
-               minValue={start_time}
-               maxValue={end_time}
+               minValue={start_time / 60}
+               maxValue={end_time / 60}
                step={0.25}
                stepOnly={true}
                disabled={!isOpen}
@@ -95,24 +110,14 @@ const OpeningTimeSetting = ({
                onChange={(e: ChangeResult) => handleInput(e)}
             />
          </div>
-         <button
-            onClick={() => {
-               setIsOpen(!isOpen);
-               setBody((prev) => {
-                  prev[id] = {
-                     id: id,
-                     start_time: minValue * 60,
-                     end_time: maxValue * 60,
-                     content: !isOpen
-                        ? `${formatTime(minValue)}-${formatTime(maxValue)}`
-                        : 'Closed',
-                  };
-                  return prev;
-               });
-            }}
-         >
-            {isOpen ? 'Ouvert' : 'Fermée'}
-         </button>
+         <label className={styles.switch}>
+            {isOpen ? (
+               <input type="checkbox" defaultChecked onChange={toggle} />
+            ) : (
+               <input type="checkbox" onChange={toggle} />
+            )}
+            <span className={`${styles.slider} ${styles.round}`}></span>
+         </label>
       </div>
    );
 };
