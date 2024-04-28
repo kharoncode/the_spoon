@@ -148,7 +148,7 @@ def get_day_openingTime(day_id):
     connection = get_connection()
     cursor = connection.cursor()
     day_data = cursor.execute('''
-            SELECT ot.start_time, ot.end_time, ot.content
+            SELECT ot.start_time, ot.end_time, ot.content, ot.day_time
             FROM openingTime ot
             JOIN daysOfTheWeek dotw 
             ON dotw.id = ot.day_id
@@ -162,7 +162,7 @@ def get_openingTime_for_each_days():
     connection = get_connection()
     cursor = connection.cursor()
     days_data = cursor.execute('''
-            SELECT dotw.name, ot.start_time, ot.end_time, ot.content
+            SELECT dotw.name, ot.start_time, ot.end_time, ot.content, ot.day_time
             FROM daysOfTheWeek dotw
             JOIN openingTime ot 
             ON dotw.id = ot.day_id
@@ -179,8 +179,8 @@ def get_openingTime_for_each_days():
         }
  
     for row in days_data:
-        name, start_time, end_time, content = row
-        days_list[name].append({"start_time":start_time,"end_time":end_time, "content":content})
+        name, start_time, end_time, content, day_time = row
+        days_list[name].append({"start_time":start_time,"end_time":end_time, "content":content, "day_time":day_time})
     connection.close()
     return days_list
 
