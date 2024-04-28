@@ -1,23 +1,33 @@
 'use client';
 import useFetch from '@/utils/useFetch';
-import React from 'react';
+import React, { useState } from 'react';
 import OpeningTimeSetting from '@/components/OpeningTimeSetting';
 
-type Opening = {
+type Days_list = {
    [key: string]: [
       {
          content: string;
-         day_time: 'lunch' | 'diner';
+         day_time: 'lunch' | 'dinner';
          start_time: number;
          end_time: number;
+         id: number;
       }
    ];
 };
 
+type Opening = {
+   id: number;
+   start_time: number;
+   end_time: number;
+   content: string;
+}[];
+
 const Setting = () => {
-   const { data, isLoading, error } = useFetch<Opening>(
+   const { data, isLoading } = useFetch<Days_list>(
       'http://127.0.0.1:5000/days'
    );
+
+   const [body, setBody] = useState<Opening>([]);
 
    const days_list = [
       'lundi',
@@ -28,44 +38,41 @@ const Setting = () => {
       'samedi',
       'dimanche',
    ];
+
+   const handleSubmit = () => {
+      console.log(body.filter((el) => el != null));
+   };
+
    return (
       <React.Fragment>
-         <div className="w-3/4 flex flex-col gap-5">
-            <h2>Ouverture</h2>
-
-            <div className="w-full flex justify-center flex-col gap-16">
-               {!isLoading &&
-                  data &&
-                  days_list.map((day) => (
-                     <div key={day} className="flex flex-col w-full gap-2">
-                        <h3>{day.toUpperCase()}</h3>
-                        <div className="flex flex-col gap-5">
-                           {data[day].map((day_time, index) => {
-                              return (
-                                 <div
-                                    key={`${day}_${index}`}
-                                    className="flex gap-8"
-                                 >
-                                    <div>
-                                       <h4 className="capitalize">
-                                          {day_time.day_time}
-                                       </h4>
-                                       <OpeningTimeSetting
-                                          day_time={day_time.day_time}
-                                          start_time={day_time.start_time / 60}
-                                          end_time={day_time.end_time / 60}
-                                          content={day_time.content}
-                                       />
-                                       <p>{day_time.content}</p>
-                                    </div>
-                                    <button>Close ?</button>
-                                 </div>
-                              );
-                           })}
-                        </div>
+         <h2>Ouverture</h2>
+         <button onClick={handleSubmit}>Submit</button>
+         <div className="w-full p-5 flex justify-center flex-col items-center gap-16">
+            {!isLoading &&
+               data &&
+               days_list.map((day) => (
+                  <div
+                     key={day}
+                     className="w-full flex flex-col items-center gap-2"
+                  >
+                     <h3>{day.toUpperCase()}</h3>
+                     <div className="w-full flex flex-col items-center gap-5">
+                        {data[day].map((day_time, index) => {
+                           return (
+                              <OpeningTimeSetting
+                                 key={`${day}_${index}`}
+                                 day_time={day_time.day_time}
+                                 start_time={day_time.start_time / 60}
+                                 end_time={day_time.end_time / 60}
+                                 content={day_time.content}
+                                 setBody={setBody}
+                                 id={day_time.id}
+                              />
+                           );
+                        })}
                      </div>
-                  ))}
-            </div>
+                  </div>
+               ))}
          </div>
       </React.Fragment>
    );
