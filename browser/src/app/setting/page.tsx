@@ -40,7 +40,16 @@ const Setting = () => {
    ];
 
    const handleSubmit = () => {
-      console.log(body.filter((el) => el != null));
+      const result = body.filter((el) => el != null);
+      fetch('http://127.0.0.1:5000/opening-times', {
+         method: 'PUT',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify(result),
+      })
+         .then((res) => res.json())
+         .then((data) => console.log(data));
    };
 
    return (

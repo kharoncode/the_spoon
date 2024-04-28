@@ -50,12 +50,6 @@ const OpeningTimeSetting = ({
    const [isOpen, setIsOpen] = useState<boolean>(
       content === 'Closed' ? false : true
    );
-   const [result, setResult] = useState({
-      id: id,
-      start_time: start_time,
-      end_time: end_time,
-      content: content,
-   });
 
    const formatTime = (time: number) => {
       const timeList = time.toString().split('.');
@@ -67,17 +61,16 @@ const OpeningTimeSetting = ({
    const handleInput = (e: ChangeResult) => {
       set_minValue(e.minValue);
       set_maxValue(e.maxValue);
-      const req = {
-         id: id,
-         start_time: e.minValue * 60,
-         end_time: e.maxValue * 60,
-         content: `${formatTime(e.minValue)}-${formatTime(e.maxValue)}`,
-      };
-      setResult(req);
       setBody((prev) => {
-         const temp = prev;
-         temp[id] = req;
-         return temp;
+         prev[id] = {
+            id: id,
+            start_time: e.minValue * 60,
+            end_time: e.maxValue * 60,
+            content: isOpen
+               ? `${formatTime(e.minValue)}-${formatTime(e.maxValue)}`
+               : 'Closed',
+         };
+         return prev;
       });
    };
 
@@ -97,25 +90,24 @@ const OpeningTimeSetting = ({
                maxValue={end_time}
                step={0.25}
                stepOnly={true}
-               labels={day_time_list[day_time].list}
                disabled={!isOpen}
+               labels={day_time_list[day_time].list}
                onChange={(e: ChangeResult) => handleInput(e)}
             />
          </div>
          <button
             onClick={() => {
-               setIsOpen((prev) => !prev);
+               setIsOpen(!isOpen);
                setBody((prev) => {
-                  const temp = prev;
-                  temp[id] = !isOpen
-                     ? result
-                     : {
-                          id: id,
-                          start_time: 0,
-                          end_time: 0,
-                          content: 'Closed',
-                       };
-                  return temp;
+                  prev[id] = {
+                     id: id,
+                     start_time: minValue * 60,
+                     end_time: maxValue * 60,
+                     content: !isOpen
+                        ? `${formatTime(minValue)}-${formatTime(maxValue)}`
+                        : 'Closed',
+                  };
+                  return prev;
                });
             }}
          >
