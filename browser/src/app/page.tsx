@@ -9,10 +9,42 @@ type user = {
    name: string;
 };
 
+type Opening = {
+   [key: string]: [
+      {
+         content: string;
+         day_time: string;
+         start_time: number;
+         end_time: number;
+      },
+      {
+         content: string;
+         day_time: string;
+         start_time: number;
+         end_time: number;
+      }
+   ];
+};
+
 export default function Home() {
-   const { data: users, isLoading } = useFetch<user[]>(
+   const { data: users, isLoading: iL_user } = useFetch<user[]>(
       'http://127.0.0.1:5000/users'
    );
+
+   const { data: data_ot, isLoading: iL_ot } = useFetch<Opening>(
+      'http://127.0.0.1:5000/days'
+   );
+
+   const days_list = [
+      'lundi',
+      'mardi',
+      'mercredi',
+      'jeudi',
+      'vendredi',
+      'samedi',
+      'dimanche',
+   ];
+
    return (
       <React.Fragment>
          <h1 className="w-full text-center mb-8 text-xl font-bold">
@@ -24,7 +56,7 @@ export default function Home() {
                <h2 className="w-full text-center text-lg font-medium">
                   List des Utilisateurs :
                </h2>
-               {!isLoading &&
+               {!iL_user &&
                   users &&
                   users.map((el, index) => {
                      return (
@@ -33,6 +65,32 @@ export default function Home() {
                         </Link>
                      );
                   })}
+            </div>
+         </div>
+         <div className="w-3/4 flex flex-col gap-5">
+            <h2>Ouverture</h2>
+            <div className="flex flex-wrap gap-10">
+               {!iL_ot &&
+                  data_ot &&
+                  days_list.map((day) => (
+                     <div key={day} className="flex gap-2">
+                        <h3>{day.toUpperCase()} :</h3>
+                        {data_ot[day][0].content !== 'Closed' &&
+                        data_ot[day][1].content !== 'Closed' ? (
+                           <p>
+                              {data_ot[day][0].content !== 'Closed' &&
+                                 data_ot[day][0].content}{' '}
+                              {data_ot[day][0].content !== 'Closed' &&
+                                 data_ot[day][1].content !== 'Closed' &&
+                                 '/'}{' '}
+                              {data_ot[day][1].content !== 'Closed' &&
+                                 data_ot[day][1].content}
+                           </p>
+                        ) : (
+                           'Closed'
+                        )}
+                     </div>
+                  ))}
             </div>
          </div>
       </React.Fragment>
