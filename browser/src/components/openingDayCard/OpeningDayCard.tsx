@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import MultiRangeSlider from 'multi-range-slider-react';
-import styles from './openingTimeSetting.module.css';
+import styles from './openingDayCard.module.css';
 
 type Opening = {
    id: number;
@@ -26,7 +26,7 @@ type Props = {
    setBody: React.Dispatch<React.SetStateAction<Opening>>;
 };
 
-const OpeningTimeSetting = ({
+const OpeningDayCard = ({
    id,
    day_time,
    start_time,
@@ -122,4 +122,4 @@ const OpeningTimeSetting = ({
    );
 };
 
-export default OpeningTimeSetting;
+export default OpeningDayCard;

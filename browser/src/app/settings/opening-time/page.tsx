@@ -1,5 +1,5 @@
 'use client';
-import OpeningTimeSetting from '@/components/openingTimeSetting/OpeningTimeSetting';
+import OpeningDayCard from '@/components/openingDayCard/OpeningDayCard';
 import useFetch from '@/utils/useFetch';
 import React, { useState } from 'react';
 
@@ -91,7 +91,7 @@ const Setting = () => {
                      <div className="w-full flex flex-col items-center gap-5">
                         {data[day].map((day_time, index) => {
                            return (
-                              <OpeningTimeSetting
+                              <OpeningDayCard
                                  key={`${day}_${index}`}
                                  day_time={day_time.day_time}
                                  start_time={day_time.start_time}

@@ -5,7 +5,7 @@ const Header = () => {
    return (
       <header className="p-5 flex gap-5">
          <Link href={'/'}>HOME</Link>
-         <Link href={'/setting'}>SETTING</Link>
+         <Link href={'/settings'}>SETTINGS</Link>
       </header>
    );
 };
