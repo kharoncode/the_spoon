@@ -14,12 +14,12 @@ def init():
     cursor.execute("CREATE TABLE IF NOT EXISTS tables (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE, size INTEGER NOT NULL);")
     cursor.execute("CREATE TABLE IF NOT EXISTS daysOfTheWeek (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
     # cursor.execute("DROP TABLE openingTime;")
-    cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, start_time INTEGER, end_time INTEGER, content VARCHAR(20), FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
+    cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, day_time VARCHAR(20), start_time INTEGER, end_time INTEGER, content VARCHAR(20), FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
     cursor.execute("CREATE TABLE IF NOT EXISTS booking (id INTEGER PRIMARY KEY, user_id INTEGER, table_id INTEGER, date TIMESTAMP, customers_nbr INTEGER, status VARCHAR(15), current_date DATE, FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (table_id) REFERENCES tables(id))")
     
     # cursor.execute("INSERT INTO tables (name, size) VALUES ('petit',2), ('moyen',4), ('gros',5);")
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
-    # cursor.execute("INSERT INTO openingTime (day_id, start_time, end_time, content) VALUES (1, 660, 840, '11:00-14:00'), (1, 1080, 1260, '18:00-21:00'),(2, 660, 840, '11:00-14:00'), (2, 1080, 1260, '18:00-21:00'),(3, 660, 840, '11:00-14:00'), (3, 1080, 1260, '18:00-21:00'),(4, 660, 840, '11:00-14:00'), (4, 1080, 1260, '18:00-21:00'),(5, 660, 840, '11:00-14:00'), (5, 1080, 1260, '18:00-21:00'),(6, 660, 840, '11:00-14:00'), (6, 1080, 1260, '18:00-21:00'),(7, 0, 0, 'Closed');")
+    # cursor.execute("INSERT INTO openingTime (day_id, day_time, start_time, end_time, content) VALUES (1, 'lunch', 660, 840, '11:00-14:00'), (1, 'diner', 660, 1260, '18:00-21:00'),(2, 'lunch', 660, 840, '11:00-14:00'), (2, 'diner', 660, 1260, '18:00-21:00'),(3, 'lunch', 660, 840, '11:00-14:00'), (3, 'diner', 660, 1260, '18:00-21:00'),(4, 'lunch', 660, 840, '11:00-14:00'), (4, 'diner', 660, 1260, '18:00-21:00'),(5, 'lunch', 660, 840, '11:00-14:00'), (5, 'diner', 660, 1260, '18:00-21:00'),(6, 'lunch', 660, 840, '11:00-14:00'), (6, 'diner', 660, 1260, '18:00-21:00'),(7, 'lunch', 0, 0, 'Closed'),(7, 'diner', 0, 0, 'Closed');")
     # connection.commit()
     connection.close()
 
@@ -134,17 +134,11 @@ def update_table(id,name,size):
         return None
 
 # OPENING
-def edit_openingTime(day_id,data):
+def update_openingTime(data_list):
     connection = get_connection()
     cursor = connection.cursor()
-    isDay = cursor.execute('SELECT * FROM openingTime WHERE day_id=(?)',(day_id,)).fetchall()
-    if isDay:
-        cursor.execute('DELETE FROM openingTime WHERE day_id=(?)', (day_id,))
-    if len(data)>0:
-        for row in data:
-            cursor.execute('INSERT INTO openingTime (day_id, start_time, end_time, content) VALUES (?,?,?,?)',(day_id, row["start_time"], row['end_time'], row['content'],))
-    else:
-        cursor.execute('INSERT INTO openingTime (day_id, start_time, end_time, content) VALUES (?,?,?,?)',(day_id, 0, 0, 'closed',))
+    for day_time in data_list :
+        cursor.execute('UPDATE openingTime SET start_time=(?), end_time=(?), content=(?) WHERE day_id=(?) and day_time=(?)', (day_time['start_time'],day_time['end_time'],day_time['content'],day_time['day_id'],day_time['day_time'],))
     connection.commit()
     connection.close()
 
@@ -202,7 +196,6 @@ def get_dict_days():
 
 
 # BOOKING
-
 def delete_pending_booking(id):
     time.sleep(60)
     booking = get_one_with_params("booking", "id", id)

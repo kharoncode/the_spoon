@@ -129,14 +129,14 @@ def table():
         return jsonify({'message':"Table not found !"}),404
 
 # OPENINGTIME
-@app.route('/opening-times',methods=['GET','POST'])
+@app.route('/opening-times',methods=['GET','PUT'])
 def openingTimes():
     if request.method == 'GET':
         openingTimes = methods.get_all('openingTime')
         return jsonify(openingTimes), 200
-    elif request.method == "POST":
+    elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.edit_openingTime(req_data['day_id'],req_data['data'])
+        result = methods.update_openingTime(req_data)
         return jsonify(result), 201
         
 @app.route('/day/<id>')
@@ -177,8 +177,6 @@ def getDays_list():
     return jsonify(days_list)
 
 # BOOKING
-
-
 @app.route('/bookings',methods=['GET','POST','PUT','DELETE'])
 def bookings():
     if request.method == 'GET':
