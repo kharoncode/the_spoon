@@ -19,7 +19,7 @@ def init():
     
     # cursor.execute("INSERT INTO tables (name, size) VALUES ('petit',2), ('moyen',4), ('gros',5);")
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
-    # cursor.execute("INSERT INTO openingTime (day_id, day_time, start_time, end_time, content) VALUES (1, 'lunch', 660, 840, '11:00-14:00'), (1, 'diner', 660, 1260, '18:00-21:00'),(2, 'lunch', 660, 840, '11:00-14:00'), (2, 'diner', 660, 1260, '18:00-21:00'),(3, 'lunch', 660, 840, '11:00-14:00'), (3, 'diner', 660, 1260, '18:00-21:00'),(4, 'lunch', 660, 840, '11:00-14:00'), (4, 'diner', 660, 1260, '18:00-21:00'),(5, 'lunch', 660, 840, '11:00-14:00'), (5, 'diner', 660, 1260, '18:00-21:00'),(6, 'lunch', 660, 840, '11:00-14:00'), (6, 'diner', 660, 1260, '18:00-21:00'),(7, 'lunch', 0, 0, 'Closed'),(7, 'diner', 0, 0, 'Closed');")
+    # cursor.execute("INSERT INTO openingTime (day_id, day_time, start_time, end_time, content) VALUES (1, 'lunch', 660, 840, '11:00-14:00'), (1, 'dinner', 660, 1260, '18:00-21:00'),(2, 'lunch', 660, 840, '11:00-14:00'), (2, 'dinner', 660, 1260, '18:00-21:00'),(3, 'lunch', 660, 840, '11:00-14:00'), (3, 'dinner', 660, 1260, '18:00-21:00'),(4, 'lunch', 660, 840, '11:00-14:00'), (4, 'dinner', 660, 1260, '18:00-21:00'),(5, 'lunch', 660, 840, '11:00-14:00'), (5, 'dinner', 660, 1260, '18:00-21:00'),(6, 'lunch', 660, 840, '11:00-14:00'), (6, 'dinner', 660, 1260, '18:00-21:00'),(7, 'lunch', 0, 0, 'Closed'),(7, 'dinner', 0, 0, 'Closed');")
     # connection.commit()
     connection.close()
 
@@ -138,7 +138,7 @@ def update_openingTime(data_list):
     connection = get_connection()
     cursor = connection.cursor()
     for day_time in data_list :
-        cursor.execute('UPDATE openingTime SET start_time=(?), end_time=(?), content=(?) WHERE day_id=(?) and day_time=(?)', (day_time['start_time'],day_time['end_time'],day_time['content'],day_time['day_id'],day_time['day_time'],))
+        cursor.execute('UPDATE openingTime SET start_time=(?), end_time=(?), content=(?) WHERE id=(?)', (day_time['start_time'],day_time['end_time'],day_time['content'],day_time['id'],))
     connection.commit()
     connection.close()
 
@@ -162,7 +162,7 @@ def get_openingTime_for_each_days():
     connection = get_connection()
     cursor = connection.cursor()
     days_data = cursor.execute('''
-            SELECT dotw.name, ot.start_time, ot.end_time, ot.content, ot.day_time
+            SELECT dotw.name, ot.start_time, ot.end_time, ot.content, ot.day_time, ot.id
             FROM daysOfTheWeek dotw
             JOIN openingTime ot 
             ON dotw.id = ot.day_id
@@ -179,8 +179,8 @@ def get_openingTime_for_each_days():
         }
  
     for row in days_data:
-        name, start_time, end_time, content, day_time = row
-        days_list[name].append({"start_time":start_time,"end_time":end_time, "content":content, "day_time":day_time})
+        name, start_time, end_time, content, day_time, id = row
+        days_list[name].append({"start_time":start_time,"end_time":end_time, "content":content, "day_time":day_time, "id":id})
     connection.close()
     return days_list
 
