@@ -230,10 +230,19 @@ def add_booking(user_id, table_id,date,customers_nbr,status):
             result = delete_pending_booking(cursor.lastrowid)
             if result == 'time_out' :
                 return {"status":'time_out',"message":f'Booking #{cursor.lastrowid} is time_out'}
-        elif status == 'validate' :
-            update_booking(cursor.lastrowid,table_id,date,customers_nbr,status)
+        # elif status == 'validate' :
+        #     update_booking(cursor.lastrowid,table_id,date,customers_nbr,status)
         connection.close()
         return {"status":"success","message":f'Booking #{cursor.lastrowid} is {status}'}
+    elif isUser and isTableSize and not is_booking_available(user_id,table_id,date):
+        if status == 'validate' :
+            booking_id = cursor.execute('SELECT id FROM booking WHERE user_id=(?) AND table_id=(?) AND date=(?)',(user_id,table_id,date,)).fetchone()
+            dict_id = dict(booking_id)
+            update_booking(dict_id['id'],table_id,date,customers_nbr,status)
+            connection.close()
+            return {"status":"success","message":f'Booking #{cursor.lastrowid} is {status}'}
+        else :
+            return {"status":"invalid","message":'The reservation is not valid'}
     else:
         return {"status":"invalid","message":'The reservation is not valid'}
 

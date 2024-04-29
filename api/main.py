@@ -217,7 +217,7 @@ def bookings():
             return jsonify(result), 201
     elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.update_booking(req_data['id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        result = methods.update_booking(req_data['user_id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
         if result=='Success':
             return jsonify({'message': f"Booking #{req_data['id']} successfully updated !"}), 201
         elif result == 'TooSmall':
