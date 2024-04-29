@@ -11,6 +11,7 @@ export default function SettingsLayout({
          <nav className="p-5 flex gap-5 self-start">
             <Link href={'/settings'}>Utilisateurs/Tables</Link>
             <Link href={'/settings/opening-time'}>{"Heures d'Ouverture"}</Link>
+            <Link href={'/settings/bookings'}>Réservations</Link>
          </nav>
          {children}
       </React.Fragment>

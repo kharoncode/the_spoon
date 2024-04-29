@@ -26,6 +26,13 @@ type Props = {
    setBody: React.Dispatch<React.SetStateAction<Opening>>;
 };
 
+export const formatTime = (time: number) => {
+   const timeList = time.toString().split('.');
+   return `${timeList[0] != '24' ? timeList[0] : '00'}:${
+      timeList[1] ? Number(`0.${timeList[1]}`) * 60 : '00'
+   }`;
+};
+
 const OpeningDayCard = ({
    id,
    day_time,
@@ -51,13 +58,6 @@ const OpeningDayCard = ({
    const [isOpen, setIsOpen] = useState<boolean>(
       content === 'closed' ? false : true
    );
-
-   const formatTime = (time: number) => {
-      const timeList = time.toString().split('.');
-      return `${timeList[0] != '24' ? timeList[0] : '00'}:${
-         timeList[1] ? Number(`0.${timeList[1]}`) : '00'
-      }`;
-   };
 
    const handleInput = (e: ChangeResult) => {
       set_minValue(e.minValue);
