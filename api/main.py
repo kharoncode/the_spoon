@@ -35,7 +35,8 @@ def users():
         req_data = request.get_json()
         result = methods.delete_with_id('users',req_data['id'])
         if result=='Success':
-            return jsonify({'message': "User successfully deleted !"}), 201
+            newList = methods.get_all('users')
+            return jsonify(newList), 201
         else:
             return jsonify({"message":result}),404
 
@@ -72,7 +73,8 @@ def tables():
         req_data = request.get_json()
         result = methods.add_table(req_data['name'],req_data['size'])
         if result == 'Success':
-            return jsonify({'message': f"Tables {req_data['name']} successfully added !"}), 201
+            newList = methods.get_all('tables')
+            return jsonify(newList), 201
         else :
             return jsonify({"message":"The table name is already in use" }),409
     elif request.method == "PUT":
@@ -88,7 +90,8 @@ def tables():
         req_data = request.get_json()
         result = methods.delete_with_id('tables',req_data['id'])
         if result=='Success':
-            return jsonify({'message': "Table successfully deleted !"}), 201
+            newList = tables = methods.get_all('tables')
+            return jsonify(newList), 201
         else:
             return jsonify({"message":"Table not found !"}),404
 
@@ -138,7 +141,22 @@ def openingTimes():
         req_data = request.get_json()
         result = methods.update_openingTime(req_data)
         return jsonify(result), 201
-        
+
+@app.route('/opening-times/open-days',methods=['GET'])
+def openDays():
+    openDays_list = methods.get_openingTime_days_list()
+    list = []
+    filterd_list = []
+    for row in openDays_list:
+        if row['id'] in list:
+            if row['id'] == 7:
+                filterd_list.append(0)
+            else :
+                filterd_list.append(row['id'])
+        else :
+            list.append(row['id'])
+    return jsonify(filterd_list)
+
 @app.route('/day/<id>')
 def getDay_by_id(id):
     data = methods.get_day_openingTime(id)
@@ -162,18 +180,25 @@ def getAllDays():
 def getDays_list():
     data = methods.get_all('openingTime')
     days_list = {
-            "lundi": [],
-            "mardi": [],
-            "mercredi": [],
-            "jeudi": [],
-            "vendredi": [],
-            "samedi": [],
-            "dimanche": []
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+            5: [],
+            6: [],
+            0: []
         }
-    days = methods.get_dict_days()
     for el in data:
+        temp_list = []
         for i in range(el['start_time'],el['end_time']-15,15):
-            days_list[days[el['day_id']]].append(i)
+            if el['content'] != 'closed':
+                temp_list.append(i)
+        if el['content'] != 'closed': 
+            if el['day_id'] == 7:
+                days_list[0].append(temp_list)
+            else :
+                days_list[el['day_id']].append(temp_list)
+        
     return jsonify(days_list)
 
 # BOOKING
@@ -203,7 +228,8 @@ def bookings():
         req_data = request.get_json()
         result = methods.delete_with_id('booking',req_data['id'])
         if result=='Success':
-            return jsonify({'message': "Booking successfully deleted !"}), 201
+            newList = methods.get_all('booking')
+            return jsonify(newList), 201
         else:
             return jsonify({"message":result}),404
 

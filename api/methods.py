@@ -143,6 +143,19 @@ def update_openingTime(data_list):
     connection.close()
 
     return get_openingTime_for_each_days()
+
+def get_openingTime_days_list():
+    connection = get_connection()
+    cursor = connection.cursor()
+    day_list = cursor.execute('''
+            SELECT dotw.id
+            FROM daysOfTheWeek dotw
+            JOIN openingTime ot 
+            ON dotw.id = ot.day_id
+            WHERE ot.content = 'closed'
+        ''').fetchall()
+    list = [dict(row) for row in day_list]
+    return list
     
 def get_day_openingTime(day_id):
     connection = get_connection()
@@ -245,7 +258,7 @@ def update_booking(id,table_id,date,customers_nbr,status):
 def tables_occupied_for_date(date):
     connection = get_connection()
     cursor = connection.cursor()
-    table = cursor.execute('SELECT table_id FROM booking WHERE date>(?) AND date<(?);',(date-5400,date+5400)).fetchall()
+    table = cursor.execute('SELECT table_id FROM booking WHERE date>(?) AND date<(?);',(date-5400000,date+5400000)).fetchall()
     connection.close()
     table_list = [dict(row) for row in table]
     return table_list
