@@ -8,7 +8,7 @@ type fetchOption = {
    body?: string;
 };
 
-interface FetchData<T> {
+export interface FetchData<T> {
    data: T | null;
    isLoading: boolean;
    error: Error | null;
