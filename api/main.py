@@ -40,28 +40,23 @@ def users():
         else:
             return jsonify({"message":result}),404
 
-@app.route('/user/search', methods=['GET'])
+@app.route('/user', methods=['GET'])
 def get_user():
     id = request.args.get('id')
     name = request.args.get('name')
     if not id and not name:
-        return jsonify({'message':"Please provide a parameter (id, size or name)"}),400
+        return jsonify({'message':"Please provide a parameter (id, name)"}),400
 
     if id:
-        user = methods.get_one_with_params('users','id', id)
-    elif name:
+        user = methods.get_user_information(id)
+        # user = methods.get_one_with_params('users','id', id)
+    elif name:  
         user = methods.get_one_with_params('users','name',name)
          
     if user:
         return jsonify(user), 200
     else:
         return jsonify({'message':"User not found !"}),404
-    
-    # user = methods.get_one_with_params('users',"id",id)
-    # if user:
-    #     return jsonify(user), 200
-    # else:
-    #     return jsonify({'message':"User not found !"}),404
 
 # TABLES
 @app.route('/tables', methods=['GET','POST','PUT','DELETE'])
@@ -100,16 +95,18 @@ def tables_availables_by_date():
     date = int(request.args.get('date'))
     if not date:
         return jsonify({'message':"Please provide a parameters table_id and date"}),400
-    tables_list = methods.get_all('tables')
-    tables_unavailable = methods.tables_occupied_for_date(date)
-    unavailable_ids = []
-    for table in tables_unavailable:
-        unavailable_ids.append(table['table_id'])
-    tables_availables_list = []
-    for table in tables_list:
-        if table['id'] not in unavailable_ids:
-            tables_availables_list.append(table)
-    return jsonify(tables_availables_list), 200
+    tables_list = methods.get_tables_information(date)
+    return jsonify(tables_list),200
+    # tables_list = methods.get_all('tables')
+    # tables_unavailable = methods.tables_occupied_for_date(date)
+    # unavailable_ids = []
+    # for table in tables_unavailable:
+    #     unavailable_ids.append(table['table_id'])
+    # tables_availables_list = []
+    # for table in tables_list:
+    #     if table['id'] not in unavailable_ids:
+    #         tables_availables_list.append(table)
+    # return jsonify(tables_availables_list), 200
 
 @app.route('/table', methods=['GET'])
 def table():
@@ -193,11 +190,11 @@ def getDays_list():
         for i in range(el['start_time'],el['end_time']-15,15):
             if el['content'] != 'closed':
                 temp_list.append(i)
-        if el['content'] != 'closed': 
-            if el['day_id'] == 7:
-                days_list[0].append(temp_list)
-            else :
-                days_list[el['day_id']].append(temp_list)
+        
+        if el['day_id'] == 7:
+            days_list[0].append(temp_list)
+        else :
+            days_list[el['day_id']].append(temp_list)
         
     return jsonify(days_list)
 
@@ -210,14 +207,14 @@ def bookings():
         return jsonify(bookings), 200
     elif request.method == "POST":
         req_data = request.get_json()
-        result = methods.add_booking(req_data['user_id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        result = methods.add_booking(req_data['user_id'],req_data['user_name'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
         if result['status'] == "invalid":
             return jsonify(result), 409
         else:
             return jsonify(result), 201
     elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.update_booking(req_data['user_id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        result = methods.update_booking_with_id(req_data['id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
         if result=='Success':
             return jsonify({'message': f"Booking #{req_data['id']} successfully updated !"}), 201
         elif result == 'TooSmall':
@@ -232,8 +229,6 @@ def bookings():
             return jsonify(newList), 201
         else:
             return jsonify({"message":result}),404
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
