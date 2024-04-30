@@ -9,7 +9,7 @@ const Settings = ({
    children: React.ReactNode;
 }>) => {
    return (
-      <div className="w-full flex flex-col items-center gap-10">
+      <div className="p-5 w-full flex justify-around">
          <div className="flex flex-col gap-2 w-80">
             <h2 className="text-center text-2xl">Utilisateurs :</h2>
             <Users />

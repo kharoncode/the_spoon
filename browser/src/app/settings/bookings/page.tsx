@@ -9,6 +9,7 @@ type booking = {
    status: string;
    table_id: number;
    user_id: number;
+   user_name: string;
 };
 
 const Bookings = () => {
@@ -37,7 +38,8 @@ const Bookings = () => {
    };
 
    return (
-      <div className="w-full flex flex-col items-center gap-5">
+      <div className="p-5 w-full flex flex-col items-center gap-5">
+         <h2 className="text-center text-2xl">Listes des Réservations</h2>
          {bookings.map((booking, index) => {
             const newDate = new Date(booking.date);
             return (
@@ -45,7 +47,9 @@ const Bookings = () => {
                   <div className="w-1/3">
                      <h3 className="text-xl">Réservation #{booking.id}</h3>
                      <p>Réservation faite le : {booking.current_date}</p>
-                     <p>Par : {booking.user_id}</p>
+                     <p>
+                        Par : user#{booking.user_id} {booking.user_name}
+                     </p>
                      <p>Pour le : {`${newDate}`}</p>
                      <p>Table #{booking.table_id}</p>
                   </div>
