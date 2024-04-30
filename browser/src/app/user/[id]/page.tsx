@@ -165,15 +165,15 @@ const User = ({ params }: { params: { id: string } }) => {
    };
 
    return (
-      <div className="relative w-full flex flex-col items-center gap-8">
-         <h1 className="text-center text-xl text-bold">
+      <div className="p-5 relative w-full flex flex-col items-center gap-8">
+         <h1 className="text-center text-2xl font-bold">
             {!iL_user && user && user.user_id
                ? ` Welcome User#${user.user_id} ${user.user_name}`
                : 'User not Found !'}
          </h1>
          {user && (
             <div className="w-96 flex flex-col border-2 rounded-xl items-center">
-               <h2 className="p-2 text-center font-bold text-xl">
+               <h2 className="p-2 text-center font-medium text-xl">
                   Faire une réservation :
                </h2>
                <div className="p-2 flex gap-1">
@@ -266,7 +266,7 @@ const User = ({ params }: { params: { id: string } }) => {
                   <div className="p-5 flex flex-col items-center gap-5">
                      <h3>Nombre de personnes</h3>
                      <div className="flex justify-center flex-wrap gap-3">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((el, index) => (
+                        {[1, 2, 3, 4, 5].map((el, index) => (
                            <div
                               className="w-10 p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100 text-center"
                               key={index}

@@ -46,8 +46,8 @@ export default function Home() {
    ];
 
    return (
-      <React.Fragment>
-         <h1 className="w-full text-center mb-8 text-xl font-bold">
+      <div className="p-5 flex flex-col items-center gap-8">
+         <h1 className="w-full text-center mb-3 text-3xl font-bold">
             The Spoon
          </h1>
          <div className="w-1/2 flex justify-around gap-50">
@@ -67,9 +67,11 @@ export default function Home() {
                   })}
             </div>
          </div>
-         <div className="w-3/4 flex flex-col gap-5">
-            <h2>Ouverture</h2>
-            <div className="flex flex-wrap gap-10">
+         <div className="w-1/2 flex flex-col gap-4">
+            <h2 className="text-xl text-center font-medium">
+               {"Horaires d'Ouverture"}
+            </h2>
+            <div className="flex justify-between flex-wrap gap-5">
                {!iL_ot &&
                   data_ot &&
                   days_list.map((day) => (
@@ -91,6 +93,6 @@ export default function Home() {
                   ))}
             </div>
          </div>
-      </React.Fragment>
+      </div>
    );
 }

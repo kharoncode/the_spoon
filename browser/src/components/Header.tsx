@@ -3,9 +3,13 @@ import React from 'react';
 
 const Header = () => {
    return (
-      <header className="p-5 flex gap-5">
-         <Link href={'/'}>HOME</Link>
-         <Link href={'/settings'}>SETTINGS</Link>
+      <header className="p-3 flex gap-5 bg-cyan-100">
+         <Link className="font-medium text-lg" href={'/'}>
+            HOME
+         </Link>
+         <Link className="font-medium text-lg" href={'/settings'}>
+            SETTINGS
+         </Link>
       </header>
    );
 };

@@ -107,44 +107,41 @@ def get_user_information(id):
     user = cursor.execute('SELECT * FROM users WHERE id=(?)', (id,)).fetchone()
     if user:
         user_info_raw = cursor.execute('''
-            SELECT u.id AS user_id, u.name AS user_name, b.id AS booking_id, b.table_id, b.date, b.customers_nbr, b.status, b.current_date
+            SELECT 
+                u.id, 
+                u.name, 
+                b.id AS booking_id, 
+                b.table_id, b.date, 
+                b.customers_nbr, 
+                b.status, 
+                b.current_date
             FROM users u
             JOIN booking b 
             ON u.id = b.user_id
             WHERE u.id = ?
             ''', (id,)).fetchall()
         
-        if user_info_raw:
-            user_info = {
-                'user_id': user_info_raw[0]['user_id'],
-                'user_name': user_info_raw[0]['user_name'],
-                'bookings': [],
-                'bookings_list':[]
+        user_info = {
+            'user_id': user['id'],
+            'user_name': user['name'],
+            'bookings': [],
+            'bookings_list':[]}
+        
+        for row in user_info_raw:
+            booking_info = {
+                'booking_id': row['booking_id'],
+                'table_id': row['table_id'],
+                'date': row['date'],
+                'customers_nbr': row['customers_nbr'],
+                'status': row['status'],
+                'current_date': row['current_date'],
             }
-            for row in user_info_raw:
-                booking_info = {
-                    'booking_id': row['booking_id'],
-                    'table_id': row['table_id'],
-                    'date': row['date'],
-                    'customers_nbr': row['customers_nbr'],
-                    'status': row['status'],
-                    'current_date': row['current_date'],
-                    'test':row['user_name']
-                }
-                user_info['bookings'].append(booking_info)
-                user_info['bookings_list'].append(row['date'])
-            
-            connection.close()
-            return user_info
-        else:
-            user_info = {
-                'user_id': user['id'],
-                'user_name': user['name'],
-                'bookings': [],
-                'bookings_list':[]
-            }
-            connection.close()
-            return user_info
+            user_info['bookings'].append(booking_info)
+            user_info['bookings_list'].append(row['date'])
+        
+        connection.close()
+        return user_info
+        
     else:
         connection.close()
         return "User not found"
@@ -187,7 +184,15 @@ def get_tables_information(date):
     connection = get_connection()
     cursor = connection.cursor()
     tables_info_raw = cursor.execute('''
-        SELECT t.id AS table_id, t.name AS table_name, t.size AS table_size, b.id AS booking_id, b.date, b.user_id, b.customers_nbr, b.status, b.current_date
+        SELECT 
+            t.id AS table_id, 
+            t.name AS table_name, 
+            t.size AS table_size, 
+            b.id AS booking_id, 
+            b.date, b.user_id, 
+            b.customers_nbr, 
+            b.status, 
+            b.current_date
         FROM tables t
         JOIN booking b 
         ON t.id = b.table_id
@@ -196,9 +201,11 @@ def get_tables_information(date):
     table_list_raw = cursor.execute('SELECT * FROM tables ORDER BY size ASC')
     tables_info = {}
     for row in table_list_raw:
-        tables_info[row['id']]={'table_id':row['id'],"table_name":row['name'],'table_size': row['size'],"bookings":[]}
+        tables_info[row['id']]={'table_id':row['id'],
+                                "table_name":row['name'],
+                                'table_size': row['size'],
+                                "bookings":[]}
     for row in tables_info_raw:
-        table_id = row['table_id']
         booking_info = {
             'booking_id': row['booking_id'],
             'date': row['date'],
@@ -207,7 +214,7 @@ def get_tables_information(date):
             'current_date': row['current_date'],
             'user_id': row['user_id']
         }
-        tables_info[table_id]['bookings'].append(booking_info)
+        tables_info[row['table_id']]['bookings'].append(booking_info)
     
     connection.close()
     return list(tables_info.values())
@@ -217,7 +224,11 @@ def update_openingTime(data_list):
     connection = get_connection()
     cursor = connection.cursor()
     for day_time in data_list :
-        cursor.execute('UPDATE openingTime SET start_time=(?), end_time=(?), content=(?) WHERE id=(?)', (day_time['start_time'],day_time['end_time'],day_time['content'],day_time['id'],))
+        cursor.execute('''
+                       UPDATE openingTime 
+                       SET start_time=(?), end_time=(?), content=(?) 
+                       WHERE id=(?)
+                       ''', (day_time['start_time'],day_time['end_time'],day_time['content'],day_time['id'],))
     connection.commit()
     connection.close()
 
@@ -303,7 +314,15 @@ def add_booking(user_id, user_name, table_id,date,customers_nbr,status):
     isUser = get_one_with_params('users', 'id', user_id)
     isTableSize = cursor.execute('SELECT * FROM tables WHERE id=(?) AND size>=(?)',(table_id,customers_nbr,)).fetchone()
     if isUser and isTableSize and is_booking_available(user_id,table_id,date):
-        cursor.execute('INSERT INTO booking (user_id, user_name, table_id, date, customers_nbr, status, current_date) VALUES (?,?,?,?,?,?,?)', (user_id, user_name, table_id,date,customers_nbr,status,datetime.now(),))
+        cursor.execute('''INSERT INTO booking 
+                       (user_id, 
+                       user_name, 
+                       table_id, 
+                       date, 
+                       customers_nbr, 
+                       status, 
+                       current_date) 
+                       VALUES (?,?,?,?,?,?,?)''', (user_id, user_name, table_id,date,customers_nbr,status,datetime.now(),))
         connection.commit()
         if status == 'pending':
             result = delete_pending_booking(cursor.lastrowid)
@@ -327,7 +346,11 @@ def update_booking_with_id(id,table_id,date,customers_nbr,status):
     booking = cursor.execute('SELECT * FROM booking WHERE id=(?)',(id,)).fetchone()
     if booking :
             if isTableSize:
-                cursor.execute('UPDATE booking SET table_id=(?), date=(?), customers_nbr=(?), status=(?) WHERE id=(?)', (table_id,date,customers_nbr,status,id,))
+                cursor.execute('''
+                               UPDATE booking 
+                               SET table_id=(?), date=(?), customers_nbr=(?), status=(?) 
+                               WHERE id=(?)
+                               ''', (table_id,date,customers_nbr,status,id,))
                 connection.commit()
                 connection.close()
                 return "Success"
