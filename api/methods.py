@@ -118,7 +118,8 @@ def get_user_information(id):
             user_info = {
                 'user_id': user_info_raw[0]['user_id'],
                 'user_name': user_info_raw[0]['user_name'],
-                'bookings': []
+                'bookings': [],
+                'bookings_list':[]
             }
             for row in user_info_raw:
                 booking_info = {
@@ -131,6 +132,7 @@ def get_user_information(id):
                     'test':row['user_name']
                 }
                 user_info['bookings'].append(booking_info)
+                user_info['bookings_list'].append(row['date'])
             
             connection.close()
             return user_info
@@ -138,7 +140,8 @@ def get_user_information(id):
             user_info = {
                 'user_id': user['id'],
                 'user_name': user['name'],
-                'bookings': []
+                'bookings': [],
+                'bookings_list':[]
             }
             connection.close()
             return user_info
@@ -346,8 +349,8 @@ def tables_occupied_for_date(date):
 def is_booking_available(user_id,table_id,date):
     connection = get_connection()
     cursor = connection.cursor()
-    isTable = cursor.execute('SELECT * FROM booking WHERE table_id=(?) AND date>(?) AND date<(?);',(table_id,date-5400,date+5400)).fetchall()
-    isUser = cursor.execute('SELECT * FROM booking WHERE user_id=(?) AND date>(?) AND date<(?);',(user_id,date-5400,date+5400)).fetchall()
+    isTable = cursor.execute('SELECT * FROM booking WHERE table_id=(?) AND date>(?) AND date<(?);',(table_id,date-5400000,date+5400000)).fetchall()
+    isUser = cursor.execute('SELECT * FROM booking WHERE user_id=(?) AND date>(?) AND date<(?);',(user_id,date-5400000,date+5400000)).fetchall()
     connection.close()
     if len(isTable)>0 or len(isUser)>0:
         return False

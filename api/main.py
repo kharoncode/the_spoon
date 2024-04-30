@@ -97,16 +97,6 @@ def tables_availables_by_date():
         return jsonify({'message':"Please provide a parameters table_id and date"}),400
     tables_list = methods.get_tables_information(date)
     return jsonify(tables_list),200
-    # tables_list = methods.get_all('tables')
-    # tables_unavailable = methods.tables_occupied_for_date(date)
-    # unavailable_ids = []
-    # for table in tables_unavailable:
-    #     unavailable_ids.append(table['table_id'])
-    # tables_availables_list = []
-    # for table in tables_list:
-    #     if table['id'] not in unavailable_ids:
-    #         tables_availables_list.append(table)
-    # return jsonify(tables_availables_list), 200
 
 @app.route('/table', methods=['GET'])
 def table():
