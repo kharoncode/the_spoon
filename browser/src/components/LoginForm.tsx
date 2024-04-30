@@ -10,7 +10,7 @@ const LoginForm = () => {
       const btn = event.currentTarget.subBTN.firstChild.data;
       if (btn == 'Se connecter') {
          fetch(
-            `http://127.0.0.1:5000/user/search?name=${event.currentTarget.userName.value}`
+            `http://127.0.0.1:5000/user?name=${event.currentTarget.userName.value}`
          )
             .then((res) => res.json())
             .then((data) => {
@@ -45,6 +45,7 @@ const LoginForm = () => {
             id="userName"
             name="userName"
             className="w-4/5 pl-2"
+            required
          />
          <button
             id="subBTN"

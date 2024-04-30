@@ -1,4 +1,5 @@
 'use client';
+import Booking_Day from '@/components/booking_components/Booking_Day';
 import { Modal } from '@/components/Modal';
 import { formatTime } from '@/components/openingDayCard/OpeningDayCard';
 import useFetch from '@/utils/useFetch';
@@ -10,6 +11,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 type data_user = {
    user_id: number;
    user_name: string;
+   bookings: booking[];
+   bookings_list: number[];
 };
 
 type booking = {
@@ -122,7 +125,7 @@ const User = ({ params }: { params: { id: string } }) => {
       if (params.id && date && hour && customerNbr && tableId) {
          fetch(`http://127.0.0.1:5000/user?id=${params.id}`)
             .then((res) => res.json())
-            .then((data: { bookings: booking[] }) => {
+            .then((data: data_user) => {
                if (data.bookings) {
                   const booking = data.bookings.find(
                      (el) =>
@@ -168,205 +171,180 @@ const User = ({ params }: { params: { id: string } }) => {
                ? ` Welcome User#${user.user_id} ${user.user_name}`
                : 'User not Found !'}
          </h1>
-         <div className="w-96 flex flex-col border-2 rounded-xl items-center">
-            <h2 className="p-2 text-center font-bold text-xl">
-               Faire une réservation :
-            </h2>
-            <div className="p-2 flex gap-1">
-               <div
-                  className="p-2 font-bold bg-emerald-800 cursor-pointer rounded-tl-xl rounded-bl-xl text-white "
-                  onClick={() => {
-                     setDate(undefined);
-                     setHour(undefined);
-                     setcustomerNbr(undefined);
-                     setTableId(undefined);
-                  }}
-               >
-                  Date
-               </div>
-               <div
-                  className={`p-2 font-bold ${!date && 'cursor-not-allowed'} ${
-                     date && 'bg-emerald-800 text-white  cursor-pointer'
-                  }`}
-                  onClick={() => {
-                     setHour(undefined);
-                     setcustomerNbr(undefined);
-                     setTableId(undefined);
-                  }}
-               >
-                  Heure
-               </div>
-               <div
-                  className={`p-2 font-bold ${!hour && 'cursor-not-allowed'} ${
-                     hour && 'bg-emerald-800 text-white  cursor-pointer'
-                  }`}
-                  onClick={() => {
-                     setcustomerNbr(undefined);
-                     setTableId(undefined);
-                  }}
-               >
-                  Nombre
-               </div>
-               <div
-                  className={`p-2 font-bold ${
-                     !customerNbr && 'cursor-not-allowed'
-                  } ${
-                     customerNbr && 'bg-emerald-800 text-white  cursor-pointer'
-                  }`}
-                  onClick={() => {
-                     setcustomerNbr(undefined);
-                     setTableId(undefined);
-                  }}
-               >
-                  Table
-               </div>
-               <div
-                  className={`p-2 font-bold ${
-                     !tableId && 'cursor-not-allowed'
-                  } ${
-                     tableId &&
-                     'bg-emerald-800 rounded-tr-xl rounded-br-xl text-white '
-                  }`}
-               >
-                  Final
-               </div>
-            </div>
-            {!date ? (
-               <div className="p-3 flex justify-center">
-                  <DatePicker
-                     inline
-                     filterDate={(date: Date) =>
-                        isDisabledDay(date, disabledDaysList)
-                     }
-                     onChange={(date: Date) =>
-                        setDate({ date: date.getTime(), day: date.getDay() })
-                     }
-                     calendarStartDay={1}
-                     minDate={new Date()}
-                  />
-               </div>
-            ) : !hour ? (
-               <>
-                  {date.day && dayList && (
-                     <div className="p-5 flex flex-col gap-3">
-                        {dayList[date.day][0].length > 0 && (
-                           <>
-                              <h3>Lunch</h3>
-                              <div className="flex justify-center flex-wrap gap-3">
-                                 {dayList[date.day][0].map((h, index) => (
-                                    <span
-                                       className="p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100"
-                                       onClick={() => setHour(h * 60000)}
-                                       key={index}
-                                    >
-                                       {formatTime(h / 60)}
-                                    </span>
-                                 ))}
-                              </div>
-                           </>
-                        )}
-                        {dayList[date.day][1].length > 0 && (
-                           <>
-                              <h3>Dinner</h3>
-                              <div className="flex justify-center flex-wrap gap-3">
-                                 {dayList[date.day][1].map((h, index) => (
-                                    <span
-                                       className="p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100"
-                                       onClick={() => setHour(h * 60000)}
-                                       key={index}
-                                    >
-                                       {formatTime(h / 60)}
-                                    </span>
-                                 ))}
-                              </div>
-                           </>
-                        )}
-                     </div>
-                  )}
-               </>
-            ) : !customerNbr ? (
-               <div className="p-5 flex flex-col items-center gap-5">
-                  <h3>Nombre de personnes</h3>
-                  <div className="flex justify-center flex-wrap gap-3">
-                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((el, index) => (
-                        <div
-                           className="w-10 p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100 text-center"
-                           key={index}
-                           onClick={() => setcustomerNbr(el)}
-                        >
-                           {el}
-                        </div>
-                     ))}
-                  </div>
-               </div>
-            ) : !tableId ? (
-               <div className="p-5 flex justify-center flex-wrap gap-3">
-                  {tablesList &&
-                     tablesList.map((table, index) => {
-                        if (
-                           table.table_size < customerNbr ||
-                           table.bookings.length > 0
-                        ) {
-                           return (
-                              <div
-                                 className={`p-2  border rounded-lg border-gray-300 bg-gray-100 cursor-not-allowed opacity-60 flex flex-col items-center`}
-                                 key={index}
-                              >
-                                 <p>{table.table_name}</p>
-                                 <p>{table.table_size} Places</p>
-                              </div>
-                           );
-                        } else {
-                           return (
-                              <div
-                                 className={`p-2  border rounded-lg border-gray-300 hover:bg-gray-100 cursor-pointer flex flex-col items-center`}
-                                 key={index}
-                                 onClick={() => {
-                                    handleSubmit('pending', table.table_id);
-                                    setTableId(table.table_id);
-                                 }}
-                              >
-                                 <p>{table.table_name}</p>
-                                 <p>{table.table_size} Places</p>
-                              </div>
-                           );
-                        }
-                     })}
-               </div>
-            ) : (
-               <div className="p-5 flex flex-col items-center gap-5">
-                  <h3 className="text-center font-medium text-lg">Résumé</h3>
-                  <div>
-                     <div className="flex gap-2">
-                        <h4 className="font-medium">Date : </h4>
-                        <p>{formatDate(date.date)}</p>
-                     </div>
-                     <div className="flex gap-2">
-                        <h4 className="font-medium">Heure : </h4>
-                        <p>{formatTime(hour / 3600000)}</p>
-                     </div>
-                     <div className="flex gap-2">
-                        <h4 className="font-medium">Nombre : </h4>
-                        <p>{customerNbr}</p>
-                     </div>
-                     <div className="flex gap-2">
-                        <h4 className="font-medium">Table : </h4>
-                        <p>{tableId}</p>
-                     </div>
-                  </div>
-                  <button
-                     className="p-2 bg-gray-100 font-bold cursor-pointer border rounded-lg border-gray-300 hover:bg-emerald-800 hover:text-white flex flex-col items-center"
+         {user && (
+            <div className="w-96 flex flex-col border-2 rounded-xl items-center">
+               <h2 className="p-2 text-center font-bold text-xl">
+                  Faire une réservation :
+               </h2>
+               <div className="p-2 flex gap-1">
+                  <div
+                     className="p-2 font-bold bg-emerald-800 cursor-pointer rounded-tl-xl rounded-bl-xl text-white "
                      onClick={() => {
-                        handleSubmitV('validate');
-                        setOpen(true);
+                        setDate(undefined);
+                        setHour(undefined);
+                        setcustomerNbr(undefined);
+                        setTableId(undefined);
                      }}
                   >
-                     Valider
-                  </button>
+                     Date
+                  </div>
+                  <div
+                     className={`p-2 font-bold ${
+                        !date && 'cursor-not-allowed'
+                     } ${date && 'bg-emerald-800 text-white  cursor-pointer'}`}
+                     onClick={() => {
+                        setHour(undefined);
+                        setcustomerNbr(undefined);
+                        setTableId(undefined);
+                     }}
+                  >
+                     Heure
+                  </div>
+                  <div
+                     className={`p-2 font-bold ${
+                        !hour && 'cursor-not-allowed'
+                     } ${hour && 'bg-emerald-800 text-white  cursor-pointer'}`}
+                     onClick={() => {
+                        setcustomerNbr(undefined);
+                        setTableId(undefined);
+                     }}
+                  >
+                     Nombre
+                  </div>
+                  <div
+                     className={`p-2 font-bold ${
+                        !customerNbr && 'cursor-not-allowed'
+                     } ${
+                        customerNbr &&
+                        'bg-emerald-800 text-white  cursor-pointer'
+                     }`}
+                     onClick={() => {
+                        setcustomerNbr(undefined);
+                        setTableId(undefined);
+                     }}
+                  >
+                     Table
+                  </div>
+                  <div
+                     className={`p-2 font-bold ${
+                        !tableId && 'cursor-not-allowed'
+                     } ${
+                        tableId &&
+                        'bg-emerald-800 rounded-tr-xl rounded-br-xl text-white '
+                     }`}
+                  >
+                     Final
+                  </div>
                </div>
-            )}
-         </div>
-         {result && <p>{result}</p>}
+               {!date ? (
+                  <div className="p-3 flex justify-center">
+                     <DatePicker
+                        inline
+                        filterDate={(date: Date) =>
+                           isDisabledDay(date, disabledDaysList)
+                        }
+                        onChange={(date: Date) =>
+                           setDate({ date: date.getTime(), day: date.getDay() })
+                        }
+                        calendarStartDay={1}
+                        minDate={new Date()}
+                     />
+                  </div>
+               ) : !hour ? (
+                  <>
+                     {date.day && dayList && (
+                        <Booking_Day
+                           dayList={dayList}
+                           day={date.day}
+                           date={date.date}
+                           bookings_list={user.bookings_list}
+                           setHour={setHour}
+                        />
+                     )}
+                  </>
+               ) : !customerNbr ? (
+                  <div className="p-5 flex flex-col items-center gap-5">
+                     <h3>Nombre de personnes</h3>
+                     <div className="flex justify-center flex-wrap gap-3">
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((el, index) => (
+                           <div
+                              className="w-10 p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100 text-center"
+                              key={index}
+                              onClick={() => setcustomerNbr(el)}
+                           >
+                              {el}
+                           </div>
+                        ))}
+                     </div>
+                  </div>
+               ) : !tableId ? (
+                  <div className="p-5 flex justify-center flex-wrap gap-3">
+                     {tablesList &&
+                        tablesList.map((table, index) => {
+                           if (
+                              table.table_size < customerNbr ||
+                              table.bookings.length > 0
+                           ) {
+                              return (
+                                 <div
+                                    className={`p-2  border rounded-lg border-gray-300 bg-gray-100 cursor-not-allowed opacity-60 flex flex-col items-center`}
+                                    key={index}
+                                 >
+                                    <p>{table.table_name}</p>
+                                    <p>{table.table_size} Places</p>
+                                 </div>
+                              );
+                           } else {
+                              return (
+                                 <div
+                                    className={`p-2  border rounded-lg border-gray-300 hover:bg-gray-100 cursor-pointer flex flex-col items-center`}
+                                    key={index}
+                                    onClick={() => {
+                                       handleSubmit('pending', table.table_id);
+                                       setTableId(table.table_id);
+                                    }}
+                                 >
+                                    <p>{table.table_name}</p>
+                                    <p>{table.table_size} Places</p>
+                                 </div>
+                              );
+                           }
+                        })}
+                  </div>
+               ) : (
+                  <div className="p-5 flex flex-col items-center gap-5">
+                     <h3 className="text-center font-medium text-lg">Résumé</h3>
+                     <div>
+                        <div className="flex gap-2">
+                           <h4 className="font-medium">Date : </h4>
+                           <p>{formatDate(date.date)}</p>
+                        </div>
+                        <div className="flex gap-2">
+                           <h4 className="font-medium">Heure : </h4>
+                           <p>{formatTime(hour / 3600000)}</p>
+                        </div>
+                        <div className="flex gap-2">
+                           <h4 className="font-medium">Nombre : </h4>
+                           <p>{customerNbr}</p>
+                        </div>
+                        <div className="flex gap-2">
+                           <h4 className="font-medium">Table : </h4>
+                           <p>{tableId}</p>
+                        </div>
+                     </div>
+                     <button
+                        className="p-2 bg-gray-100 font-bold cursor-pointer border rounded-lg border-gray-300 hover:bg-emerald-800 hover:text-white flex flex-col items-center"
+                        onClick={() => {
+                           handleSubmitV('validate');
+                           setOpen(true);
+                        }}
+                     >
+                        Valider
+                     </button>
+                  </div>
+               )}
+            </div>
+         )}
          <div className="absolute"></div>
          <Modal open={open}>
             {alert === 'time_out' ? (
@@ -394,8 +372,7 @@ const User = ({ params }: { params: { id: string } }) => {
             ) : alert === 'invalid' ? (
                <div className="flex flex-col items-center gap-4">
                   <h3 className="text-center font-medium text-lg">
-                     Vous avez déjà réserver une autre table à plus ou moins
-                     90min
+                     {"La table n'est pas ou plus disponible."}
                   </h3>
                   <div
                      className="p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100 flex flex-col items-center"
