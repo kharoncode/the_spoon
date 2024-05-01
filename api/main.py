@@ -97,13 +97,15 @@ def tables_availables_by_date():
     tables_list = methods.get_tables_information(date)
     return jsonify(tables_list),200
 
-@app.route('/tables/size-available',methods=['GET'])
-def tables_size_availables_by_date():
+@app.route('/tables/max-size-available',methods=['GET'])
+def max_size_availables_by_date():
     date = int(request.args.get('date'))
     if not date:
         return jsonify({'message':"Please provide a parameters table_id and date"}),400
-    tables_list = methods.is_fullDate_valide(date)
+    tables_list = methods.max_customer(date)
     return jsonify(tables_list),200
+
+
 
 @app.route('/table', methods=['GET'])
 def table():
@@ -124,6 +126,8 @@ def table():
         return jsonify(table), 200
     else:
         return jsonify({'message':"Table not found !"}),404
+
+
 
 # OPENINGTIME
 @app.route('/opening-times',methods=['GET','PUT'])
@@ -212,6 +216,14 @@ def bookings():
             return jsonify(newList), 201
         else:
             return jsonify({"message":result}),404
+
+@app.route('/hours/isAvailable',methods=['GET'])
+def is_hours_availables_by_date():
+    date = int(request.args.get('date'))
+    if not date:
+        return jsonify({'message':"Please provide a parameters table_id and date"}),400
+    tables_list = methods.is_fullDate_valide(date)
+    return jsonify(tables_list),200
 
 if __name__ == '__main__':
     app.run(debug=True)

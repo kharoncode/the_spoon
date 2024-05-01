@@ -420,3 +420,19 @@ def is_booking_available(user_id,table_id,date):
         return False
     else:
         return True
+    
+def max_customer(date):
+    connection = get_connection()
+    cursor = connection.cursor()
+    size_list = []
+    tables_size_raw = cursor.execute('''SELECT size FROM tables''')
+    for row in tables_size_raw :
+        size_list.append(row['size'])
+    bigger_size = max(size_list)
+    tables_row = cursor.execute('''SELECT t.size AS table_size, b.date 
+                                From booking b
+                                JOIN tables t
+                                WHERE t.size = b.table_size AND date>(?) AND date<(?)''',(date-5400000,date+5400000,))
+    for row in tables_row :
+        size_list.remove(row['table_size'])
+    return {"bigger_size":bigger_size, "max_available":max(size_list)}
