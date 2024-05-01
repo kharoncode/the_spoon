@@ -50,7 +50,7 @@ const LoginForm = () => {
          <button
             id="subBTN"
             type="submit"
-            className={`p-2 bg-blue-100 rounded-md ${
+            className={`p-2 bg-blue-100 rounded-md border-2 hover:border-blue-300 ${
                error === 'User not found !' && 'border-4 border-red-500'
             }`}
          >

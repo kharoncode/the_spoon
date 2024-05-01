@@ -54,7 +54,7 @@ export default function Home() {
             <LoginForm />
             <div className="p-5 flex flex-col text-center gap-2">
                <h2 className="w-full text-center text-lg font-medium">
-                  List des Utilisateurs :
+                  Liste des Utilisateurs :
                </h2>
                {!iL_user &&
                   users &&

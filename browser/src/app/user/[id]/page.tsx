@@ -168,7 +168,7 @@ const User = ({ params }: { params: { id: string } }) => {
       <div className="p-5 relative w-full flex flex-col items-center gap-8">
          <h1 className="text-center text-2xl font-bold">
             {!iL_user && user && user.user_id
-               ? ` Welcome User#${user.user_id} ${user.user_name}`
+               ? ` Welcome ${user.user_name}`
                : 'User not Found !'}
          </h1>
          {user && (

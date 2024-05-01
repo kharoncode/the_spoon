@@ -36,7 +36,8 @@ export const Users = () => {
          {users.map((user, index) => {
             return (
                <div key={index} className="w-80 flex justify-around">
-                  <p className="w-1/2 text-xl">{user.name}</p>
+                  <p className="text-xl">#{user.id}</p>
+                  <p className="w-1/2 text-xl text-center">{user.name}</p>
                   <button
                      onClick={() => handleDelete(user.id)}
                      className="w-5 fill-red-800 hover:fill-red-600"

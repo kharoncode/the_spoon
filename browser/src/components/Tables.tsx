@@ -81,7 +81,7 @@ const Tables = () => {
          </div>
          <form
             onSubmit={handleSubmit}
-            className="p-5 flex flex-col items-center gap-5 bg-cyan-200 rounded-2xl"
+            className="w-80 p-4 flex flex-col items-center gap-5 bg-blue-200 border border-blue-500 rounded-xl"
          >
             <h2 className="text-xl">Ajouter une table</h2>
             <div className="flex gap-4">
@@ -96,13 +96,16 @@ const Tables = () => {
             <div className="flex gap-4">
                <label htmlFor="tableSize">Taille</label>
                <input
-                  className="pl-2"
+                  className="pl-2 rounded-sm"
                   type="number"
                   id="tableSize"
                   name="tableSize"
                />
             </div>
-            <button className="p-2 rounded-lg bg-purple-400" type="submit">
+            <button
+               className="p-2 bg-blue-100 border-2 hover:border-blue-300 rounded-md"
+               type="submit"
+            >
                Ajouter
             </button>
          </form>
