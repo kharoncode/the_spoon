@@ -1,14 +1,23 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import { formatTime } from '../openingDayCard/OpeningDayCard';
 
 const isHourUnvalide = (
    bookings_list: number[],
    hour: number,
-   date: number
+   date: number,
+   isInvalidHourList: {
+      [key: number]: boolean;
+   }
 ) => {
    const fullDate = hour * 60000 + date;
+   if (fullDate < Date.now()) {
+      return true;
+   }
+   if (isInvalidHourList[fullDate]) {
+      return true;
+   }
    for (let i = 0; i < bookings_list.length; i++) {
-      console.log(i);
       if (
          fullDate > bookings_list[i] - 5400000 &&
          fullDate < bookings_list[i] + 5400000
@@ -20,7 +29,6 @@ const isHourUnvalide = (
 };
 
 type props = {
-   dayList: { [key: number]: [number[], number[]] };
    day: number;
    date: number;
    bookings_list: number[];
@@ -54,50 +62,87 @@ const UnvalideHourComponent = ({ hour }: { hour: number }) => {
    );
 };
 
-const Booking_Day = ({ dayList, day, date, bookings_list, setHour }: props) => {
+const Booking_Day = ({ day, date, bookings_list, setHour }: props) => {
+   const [dayList, setDayList] = useState<{
+      [key: number]: [number[], number[]];
+   }>();
+   const [isInvalidHourList, setIsInvalidHourList] = useState<{
+      [key: number]: boolean;
+   }>();
+   useEffect(() => {
+      fetch(`http://127.0.0.1:5000//tables/size-available?date=${date}`)
+         .then((res) => res.json())
+         .then((data) => setIsInvalidHourList(data));
+      fetch('http://127.0.0.1:5000/days/list')
+         .then((res) => res.json())
+         .then((data) => setDayList(data));
+   }, [date]);
+
    return (
-      <div className="p-5 flex flex-col gap-3">
-         {dayList[day][0].length > 0 && (
-            <>
-               <h3>Lunch</h3>
-               <div className="flex justify-center flex-wrap gap-3">
-                  {dayList[day][0].map((h, index) => {
-                     if (isHourUnvalide(bookings_list, h, date)) {
-                        return <UnvalideHourComponent key={index} hour={h} />;
-                     } else {
-                        return (
-                           <ValideHourComponent
-                              key={index}
-                              hour={h}
-                              setHour={setHour}
-                           />
-                        );
-                     }
-                  })}
-               </div>
-            </>
+      <>
+         {dayList && isInvalidHourList && (
+            <div className="p-5 flex flex-col gap-3">
+               {dayList[day][0].length > 0 && (
+                  <>
+                     <h3>Lunch</h3>
+                     <div className="flex justify-center flex-wrap gap-3">
+                        {dayList[day][0].map((h, index) => {
+                           if (
+                              isHourUnvalide(
+                                 bookings_list,
+                                 h,
+                                 date,
+                                 isInvalidHourList
+                              )
+                           ) {
+                              return (
+                                 <UnvalideHourComponent key={index} hour={h} />
+                              );
+                           } else {
+                              return (
+                                 <ValideHourComponent
+                                    key={index}
+                                    hour={h}
+                                    setHour={setHour}
+                                 />
+                              );
+                           }
+                        })}
+                     </div>
+                  </>
+               )}
+               {dayList[day][1].length > 0 && (
+                  <>
+                     <h3>Dinner</h3>
+                     <div className="flex justify-center flex-wrap gap-3">
+                        {dayList[day][1].map((h, index) => {
+                           if (
+                              isHourUnvalide(
+                                 bookings_list,
+                                 h,
+                                 date,
+                                 isInvalidHourList
+                              )
+                           ) {
+                              return (
+                                 <UnvalideHourComponent key={index} hour={h} />
+                              );
+                           } else {
+                              return (
+                                 <ValideHourComponent
+                                    key={index}
+                                    hour={h}
+                                    setHour={setHour}
+                                 />
+                              );
+                           }
+                        })}
+                     </div>
+                  </>
+               )}
+            </div>
          )}
-         {dayList[day][1].length > 0 && (
-            <>
-               <h3>Dinner</h3>
-               <div className="flex justify-center flex-wrap gap-3">
-                  {dayList[day][1].map((h, index) => {
-                     if (isHourUnvalide(bookings_list, h, date)) {
-                        return <UnvalideHourComponent key={index} hour={h} />;
-                     } else {
-                        return (
-                           <ValideHourComponent
-                              key={index}
-                              hour={h}
-                              setHour={setHour}
-                           />
-                        );
-                     }
-                  })}
-               </div>
-            </>
-         )}
-      </div>
+      </>
    );
 };
 

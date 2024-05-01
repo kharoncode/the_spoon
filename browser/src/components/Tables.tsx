@@ -100,6 +100,7 @@ const Tables = () => {
                   type="number"
                   id="tableSize"
                   name="tableSize"
+                  min={1}
                />
             </div>
             <button

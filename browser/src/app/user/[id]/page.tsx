@@ -53,9 +53,6 @@ const formatDate = (date: number) => {
 
 const User = ({ params }: { params: { id: string } }) => {
    const router = useRouter();
-   const [dayList, setDayList] = useState<{
-      [key: number]: [number[], number[]];
-   }>();
    const [disabledDaysList, setDisabledDaysList] = useState<number[]>([]);
    const { data: user, isLoading: iL_user } = useFetch<data_user>(
       `http://127.0.0.1:5000/user?id=${params.id}`
@@ -66,16 +63,12 @@ const User = ({ params }: { params: { id: string } }) => {
       fetch('http://127.0.0.1:5000/opening-times/open-days')
          .then((res) => res.json())
          .then((data) => setDisabledDaysList(data));
-      fetch('http://127.0.0.1:5000/days/list')
-         .then((res) => res.json())
-         .then((data) => setDayList(data));
    }, []);
 
    const [date, setDate] = useState<selectedDate>();
    const [hour, setHour] = useState<number>();
    const [customerNbr, setcustomerNbr] = useState<number>();
-   const [tableId, setTableId] = useState<number>();
-   const [result, setResult] = useState<string>();
+   const [tableInfo, setTableInfo] = useState<{ size: number; id: number }>();
    const [alert, setAlert] = useState('');
    const [open, setOpen] = useState(false);
 
@@ -85,17 +78,24 @@ const User = ({ params }: { params: { id: string } }) => {
             `http://127.0.0.1:5000/tables/available?date=${date.date + hour}`
          )
             .then((res) => res.json())
-            .then((data) => setTablesList(data));
+            .then((data) => {
+               setTablesList(data);
+            });
       }
    }, [date, hour]);
 
-   const handleSubmit = (status: string, table_id_props?: number) => {
-      if (params.id && date && hour && customerNbr && table_id_props && user) {
+   const handleSubmit = (
+      status: string,
+      table_id_props: number,
+      table_size_props: number
+   ) => {
+      if (params.id && date && hour && customerNbr && user) {
          const body = {
             customers_nbr: customerNbr,
             date: date.date + hour,
             status: status,
             table_id: table_id_props,
+            table_size: table_size_props,
             user_id: params.id,
             user_name: user.user_name,
          };
@@ -116,13 +116,12 @@ const User = ({ params }: { params: { id: string } }) => {
                   setAlert(data.status);
                   setOpen(true);
                }
-               setResult(data.message);
             });
       }
    };
 
    const handleSubmitV = (status: string) => {
-      if (params.id && date && hour && customerNbr && tableId) {
+      if (params.id && date && hour && customerNbr && tableInfo) {
          fetch(`http://127.0.0.1:5000/user?id=${params.id}`)
             .then((res) => res.json())
             .then((data: data_user) => {
@@ -137,7 +136,8 @@ const User = ({ params }: { params: { id: string } }) => {
                         customers_nbr: customerNbr,
                         date: date.date + hour,
                         status: status,
-                        table_id: tableId,
+                        table_id: tableInfo.id,
+                        table_size: tableInfo.size,
                         user_id: params.id,
                      };
 
@@ -150,7 +150,6 @@ const User = ({ params }: { params: { id: string } }) => {
                      })
                         .then((res) => res.json())
                         .then((data) => {
-                           setResult(data.message);
                            setOpen(true);
                         });
                   }
@@ -183,7 +182,7 @@ const User = ({ params }: { params: { id: string } }) => {
                         setDate(undefined);
                         setHour(undefined);
                         setcustomerNbr(undefined);
-                        setTableId(undefined);
+                        setTableInfo(undefined);
                      }}
                   >
                      Date
@@ -195,7 +194,7 @@ const User = ({ params }: { params: { id: string } }) => {
                      onClick={() => {
                         setHour(undefined);
                         setcustomerNbr(undefined);
-                        setTableId(undefined);
+                        setTableInfo(undefined);
                      }}
                   >
                      Heure
@@ -206,7 +205,7 @@ const User = ({ params }: { params: { id: string } }) => {
                      } ${hour && 'bg-emerald-800 text-white  cursor-pointer'}`}
                      onClick={() => {
                         setcustomerNbr(undefined);
-                        setTableId(undefined);
+                        setTableInfo(undefined);
                      }}
                   >
                      Nombre
@@ -220,16 +219,16 @@ const User = ({ params }: { params: { id: string } }) => {
                      }`}
                      onClick={() => {
                         setcustomerNbr(undefined);
-                        setTableId(undefined);
+                        setTableInfo(undefined);
                      }}
                   >
                      Table
                   </div>
                   <div
                      className={`p-2 font-bold ${
-                        !tableId && 'cursor-not-allowed'
+                        !tableInfo && 'cursor-not-allowed'
                      } ${
-                        tableId &&
+                        tableInfo &&
                         'bg-emerald-800 rounded-tr-xl rounded-br-xl text-white '
                      }`}
                   >
@@ -252,9 +251,8 @@ const User = ({ params }: { params: { id: string } }) => {
                   </div>
                ) : !hour ? (
                   <>
-                     {date.day && dayList && (
+                     {date.day && (
                         <Booking_Day
-                           dayList={dayList}
                            day={date.day}
                            date={date.date}
                            bookings_list={user.bookings_list}
@@ -277,7 +275,7 @@ const User = ({ params }: { params: { id: string } }) => {
                         ))}
                      </div>
                   </div>
-               ) : !tableId ? (
+               ) : !tableInfo ? (
                   <div className="p-5 flex justify-center flex-wrap gap-3">
                      {tablesList &&
                         tablesList.map((table, index) => {
@@ -300,8 +298,15 @@ const User = ({ params }: { params: { id: string } }) => {
                                     className={`p-2  border rounded-lg border-gray-300 hover:bg-gray-100 cursor-pointer flex flex-col items-center`}
                                     key={index}
                                     onClick={() => {
-                                       handleSubmit('pending', table.table_id);
-                                       setTableId(table.table_id);
+                                       handleSubmit(
+                                          'pending',
+                                          table.table_id,
+                                          table.table_size
+                                       );
+                                       setTableInfo({
+                                          id: table.table_id,
+                                          size: table.table_size,
+                                       });
                                     }}
                                  >
                                     <p>{table.table_name}</p>
@@ -329,7 +334,7 @@ const User = ({ params }: { params: { id: string } }) => {
                         </div>
                         <div className="flex gap-2">
                            <h4 className="font-medium">Table : </h4>
-                           <p>{tableId}</p>
+                           <p>{tableInfo.id}</p>
                         </div>
                      </div>
                      <button
@@ -355,7 +360,12 @@ const User = ({ params }: { params: { id: string } }) => {
                   <div
                      className="p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100 flex flex-col items-center"
                      onClick={() => {
-                        handleSubmit('pending', tableId);
+                        tableInfo &&
+                           handleSubmit(
+                              'pending',
+                              tableInfo.id,
+                              tableInfo.size
+                           );
                         setOpen(false);
                         setAlert('');
                      }}
@@ -379,7 +389,7 @@ const User = ({ params }: { params: { id: string } }) => {
                      onClick={() => {
                         setHour(undefined);
                         setcustomerNbr(undefined);
-                        setTableId(undefined);
+                        setTableInfo(undefined);
                         setOpen(false);
                         setAlert('');
                      }}
