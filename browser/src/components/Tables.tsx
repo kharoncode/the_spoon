@@ -14,6 +14,7 @@ type table = {
 
 const Tables = () => {
    const [tables, setTables] = useState<table[]>([]);
+   const [error, setError] = useState<string>();
 
    useEffect(() => {
       fetch('http://127.0.0.1:5000/tables')
@@ -53,7 +54,14 @@ const Tables = () => {
                return res.json();
             }
          })
-         .then((data) => setTables(data));
+         .then((data) => {
+            if (data.status === 201) {
+               setTables(data.result);
+            } else {
+               console.log(data.result);
+               setError(data.result);
+            }
+         });
    };
 
    return (
@@ -109,6 +117,7 @@ const Tables = () => {
             >
                Ajouter
             </button>
+            {error && <p>Error : {error}</p>}
          </form>
       </div>
    );

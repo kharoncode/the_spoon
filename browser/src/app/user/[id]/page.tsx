@@ -198,6 +198,12 @@ const User = ({ params }: { params: { id: string } }) => {
       }
    };
 
+   const handleDelete = (date: number) => {
+      fetch(`http://127.0.0.1:5000/bookings/canceled?date=${date}`, {
+         method: 'DELETE',
+      });
+   };
+
    const isDisabledDay = (date: Date, disabledDays: number[]) => {
       const day = date.getDay();
       return !disabledDays.includes(day);
@@ -400,6 +406,15 @@ const User = ({ params }: { params: { id: string } }) => {
                         }}
                      >
                         Valider
+                     </button>
+                     <button
+                        className="p-2 bg-gray-100 font-bold cursor-pointer border rounded-lg border-gray-300 hover:bg-emerald-800 hover:text-white flex flex-col items-center"
+                        onClick={() => {
+                           handleDelete(date.date + hour);
+                           router.replace(`/`);
+                        }}
+                     >
+                        Annuler
                      </button>
                   </div>
                )}
