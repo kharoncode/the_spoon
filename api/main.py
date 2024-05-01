@@ -68,9 +68,9 @@ def tables():
         result = methods.add_table(req_data['name'],req_data['size'])
         if result == 'Success':
             newList = methods.get_all('tables')
-            return jsonify(newList), 201
+            return jsonify({"status":201,"result":newList}), 201
         else :
-            return jsonify({"message":"The table name is already in use" }),409
+            return jsonify({"status":409,"result":"The table name is already in use"}),409
     elif request.method == "PUT":
         req_data = request.get_json()
         result = methods.update_table(req_data['id'],req_data['name'],req_data['size'])
