@@ -435,4 +435,20 @@ def max_customer(date):
                                 WHERE t.size = b.table_size AND date>(?) AND date<(?)''',(date-5400000,date+5400000,))
     for row in tables_row :
         size_list.remove(row['table_size'])
+    connection.close()
     return {"bigger_size":bigger_size, "max_available":max(size_list)}
+
+def delete_booking_with_date(date):
+    connection = get_connection()
+    cursor = connection.cursor()
+    data = cursor.execute('SELECT * FROM booking WHERE date=(?)',(date,)).fetchone()
+    if data:
+        cursor.execute(f'DELETE FROM booking WHERE date=(?)', (date,))
+        connection.commit()
+        connection.close()
+        return "Success"
+    else:
+        connection.close()
+        return "ID not found !"
+
+    

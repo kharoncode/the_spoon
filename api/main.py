@@ -106,7 +106,6 @@ def max_size_availables_by_date():
     return jsonify(tables_list),200
 
 
-
 @app.route('/table', methods=['GET'])
 def table():
     id = request.args.get('id')
@@ -216,6 +215,18 @@ def bookings():
             return jsonify(newList), 201
         else:
             return jsonify({"message":result}),404
+
+@app.route('/bookings/canceled',methods=['DELETE'])
+def canceled_booking_by_date():
+    date = request.args.get('date')
+    if date:
+        result = methods.delete_booking_with_date(date)
+        if result=='Success':
+            return jsonify({"message":result}), 201
+        else:
+            return jsonify({"message":result}),404
+    else :
+        return jsonify({'message':"Please provide a parameter date"}),400
 
 @app.route('/hours/isAvailable',methods=['GET'])
 def is_hours_availables_by_date():
