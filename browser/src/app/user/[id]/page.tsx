@@ -52,6 +52,45 @@ const formatDate = (date: number) => {
    return strDate;
 };
 
+const deleteBookingByDate = (
+   date?: selectedDate,
+   hour?: number,
+   tableInfo?: { size: number; id: number },
+   setDate?: React.Dispatch<React.SetStateAction<selectedDate | undefined>>,
+   setHour?: React.Dispatch<React.SetStateAction<number | undefined>>,
+   setcustomerNbr?: React.Dispatch<React.SetStateAction<number | undefined>>,
+   setTableInfo?: React.Dispatch<
+      React.SetStateAction<
+         | {
+              size: number;
+              id: number;
+           }
+         | undefined
+      >
+   >
+) => {
+   if (date && hour && tableInfo) {
+      fetch(
+         `http://127.0.0.1:5000/bookings/canceled?date=${date.date + hour}`,
+         {
+            method: 'DELETE',
+         }
+      )
+         .then((res) => res.json())
+         .then((data) => {
+            setDate && setDate(undefined);
+            setHour && setHour(undefined);
+            setcustomerNbr && setcustomerNbr(undefined);
+            setTableInfo && setTableInfo(undefined);
+         });
+   } else {
+      setDate && setDate(undefined);
+      setHour && setHour(undefined);
+      setcustomerNbr && setcustomerNbr(undefined);
+      setTableInfo && setTableInfo(undefined);
+   }
+};
+
 const User = ({ params }: { params: { id: string } }) => {
    const router = useRouter();
    const [disabledDaysList, setDisabledDaysList] = useState<number[]>([]);
@@ -180,10 +219,15 @@ const User = ({ params }: { params: { id: string } }) => {
                   <div
                      className="p-2 font-bold bg-emerald-800 cursor-pointer rounded-tl-xl rounded-bl-xl text-white "
                      onClick={() => {
-                        setDate(undefined);
-                        setHour(undefined);
-                        setcustomerNbr(undefined);
-                        setTableInfo(undefined);
+                        deleteBookingByDate(
+                           date,
+                           hour,
+                           tableInfo,
+                           setDate,
+                           setHour,
+                           setcustomerNbr,
+                           setTableInfo
+                        );
                      }}
                   >
                      Date
@@ -193,9 +237,15 @@ const User = ({ params }: { params: { id: string } }) => {
                         !date && 'cursor-not-allowed'
                      } ${date && 'bg-emerald-800 text-white  cursor-pointer'}`}
                      onClick={() => {
-                        setHour(undefined);
-                        setcustomerNbr(undefined);
-                        setTableInfo(undefined);
+                        deleteBookingByDate(
+                           date,
+                           hour,
+                           tableInfo,
+                           undefined,
+                           setHour,
+                           setcustomerNbr,
+                           setTableInfo
+                        );
                      }}
                   >
                      Heure
@@ -205,8 +255,15 @@ const User = ({ params }: { params: { id: string } }) => {
                         !hour && 'cursor-not-allowed'
                      } ${hour && 'bg-emerald-800 text-white  cursor-pointer'}`}
                      onClick={() => {
-                        setcustomerNbr(undefined);
-                        setTableInfo(undefined);
+                        deleteBookingByDate(
+                           date,
+                           hour,
+                           tableInfo,
+                           undefined,
+                           undefined,
+                           setcustomerNbr,
+                           setTableInfo
+                        );
                      }}
                   >
                      Nombre
@@ -219,8 +276,15 @@ const User = ({ params }: { params: { id: string } }) => {
                         'bg-emerald-800 text-white  cursor-pointer'
                      }`}
                      onClick={() => {
-                        setcustomerNbr(undefined);
-                        setTableInfo(undefined);
+                        deleteBookingByDate(
+                           date,
+                           hour,
+                           tableInfo,
+                           undefined,
+                           undefined,
+                           undefined,
+                           setTableInfo
+                        );
                      }}
                   >
                      Table
