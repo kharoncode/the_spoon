@@ -1,4 +1,5 @@
 'use client';
+import Booking_CustomersNbr from '@/components/booking_components/Booking_CustomersNbr';
 import Booking_Day from '@/components/booking_components/Booking_Day';
 import { Modal } from '@/components/Modal';
 import { formatTime } from '@/components/openingDayCard/OpeningDayCard';
@@ -261,20 +262,10 @@ const User = ({ params }: { params: { id: string } }) => {
                      )}
                   </>
                ) : !customerNbr ? (
-                  <div className="p-5 flex flex-col items-center gap-5">
-                     <h3>Nombre de personnes</h3>
-                     <div className="flex justify-center flex-wrap gap-3">
-                        {[1, 2, 3, 4, 5].map((el, index) => (
-                           <div
-                              className="w-10 p-2 cursor-pointer border rounded-lg border-gray-300 hover:bg-gray-100 text-center"
-                              key={index}
-                              onClick={() => setcustomerNbr(el)}
-                           >
-                              {el}
-                           </div>
-                        ))}
-                     </div>
-                  </div>
+                  <Booking_CustomersNbr
+                     date={date.date + hour}
+                     setcustomerNbr={setcustomerNbr}
+                  />
                ) : !tableInfo ? (
                   <div className="p-5 flex justify-center flex-wrap gap-3">
                      {tablesList &&
