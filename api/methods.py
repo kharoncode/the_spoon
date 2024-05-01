@@ -15,7 +15,7 @@ def init():
     cursor.execute("CREATE TABLE IF NOT EXISTS daysOfTheWeek (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
     # cursor.execute("DROP TABLE booking;")
     cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, day_time VARCHAR(20), start_time INTEGER, end_time INTEGER, content VARCHAR(20), FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
-    cursor.execute("CREATE TABLE IF NOT EXISTS booking (id INTEGER PRIMARY KEY, user_id INTEGER, user_name VARCHAR(20), table_id INTEGER, date TIMESTAMP, customers_nbr INTEGER, status VARCHAR(15), current_date DATE, FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (table_id) REFERENCES tables(id))")
+    cursor.execute("CREATE TABLE IF NOT EXISTS booking (id INTEGER PRIMARY KEY, user_id INTEGER, user_name VARCHAR(20), table_id INTEGER, table_size INTEGER, date INTEGER, customers_nbr INTEGER, status VARCHAR(15), current_date DATE, FOREIGN KEY (user_id) REFERENCES users(id), FOREIGN KEY (table_id) REFERENCES tables(id))")
     
     # cursor.execute("INSERT INTO tables (name, size) VALUES ('petit',2), ('moyen',4), ('gros',5);")
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
@@ -244,8 +244,18 @@ def get_openingTime_days_list():
             ON dotw.id = ot.day_id
             WHERE ot.content = 'closed'
         ''').fetchall()
-    list = [dict(row) for row in day_list]
-    return list
+    list_raw = [dict(row) for row in day_list]
+    list = []
+    filterd_list = []
+    for row in list_raw :
+        if row['id'] in list:
+            if row['id'] == 7:
+                filterd_list.append(0)
+            else :
+                filterd_list.append(row['id'])
+        else :
+            list.append(row['id'])
+    return filterd_list
     
 def get_day_openingTime(day_id):
     connection = get_connection()
@@ -257,9 +267,13 @@ def get_day_openingTime(day_id):
             ON dotw.id = ot.day_id
             WHERE dotw.id=(?)
         ''', (day_id,)).fetchall()
-    day_data_list = [dict(row) for row in day_data]
+    list = []
+    for row in day_data:
+        for i in range(row['start_time'],row['end_time']-15,15):
+            list.append(i)
+    # day_data_list = [dict(row) for row in day_data]
     connection.close()
-    return day_data_list
+    return list
 
 def get_openingTime_for_each_days():
     connection = get_connection()
@@ -308,7 +322,7 @@ def delete_pending_booking(id):
     else :
         return 'validate'
 
-def add_booking(user_id, user_name, table_id,date,customers_nbr,status):
+def add_booking(user_id, user_name, table_id, table_size, date,customers_nbr,status):
     connection = get_connection()
     cursor = connection.cursor()
     isUser = get_one_with_params('users', 'id', user_id)
@@ -318,11 +332,12 @@ def add_booking(user_id, user_name, table_id,date,customers_nbr,status):
                        (user_id, 
                        user_name, 
                        table_id, 
+                       table_size,
                        date, 
                        customers_nbr, 
                        status, 
                        current_date) 
-                       VALUES (?,?,?,?,?,?,?)''', (user_id, user_name, table_id,date,customers_nbr,status,datetime.now(),))
+                       VALUES (?,?,?,?,?,?,?,?)''', (user_id, user_name, table_id,table_size,date,customers_nbr,status,datetime.now().strftime("%d/%m/%Y à %H:%M"),))
         connection.commit()
         if status == 'pending':
             result = delete_pending_booking(cursor.lastrowid)
@@ -339,7 +354,7 @@ def add_booking(user_id, user_name, table_id,date,customers_nbr,status):
         connection.close()
         return {"status":"invalid","message":'The reservation is not valid'}
 
-def update_booking_with_id(id,table_id,date,customers_nbr,status):
+def update_booking_with_id(id,table_id, table_size, date,customers_nbr,status):
     connection = get_connection()
     cursor = connection.cursor()
     isTableSize = cursor.execute('SELECT * FROM tables WHERE id=(?) AND size>=(?)',(table_id,customers_nbr,)).fetchone()
@@ -348,9 +363,9 @@ def update_booking_with_id(id,table_id,date,customers_nbr,status):
             if isTableSize:
                 cursor.execute('''
                                UPDATE booking 
-                               SET table_id=(?), date=(?), customers_nbr=(?), status=(?) 
+                               SET table_id=(?),table_size=(?), date=(?), customers_nbr=(?), status=(?) 
                                WHERE id=(?)
-                               ''', (table_id,date,customers_nbr,status,id,))
+                               ''', (table_id,table_size, date,customers_nbr,status,id,))
                 connection.commit()
                 connection.close()
                 return "Success"
@@ -368,6 +383,32 @@ def tables_occupied_for_date(date):
     connection.close()
     table_list = [dict(row) for row in table]
     return table_list
+
+def is_fullDate_valide(date):
+    connection = get_connection()
+    cursor = connection.cursor()
+    day = datetime.fromtimestamp(date/1000).weekday()+1
+    hour_list = get_day_openingTime(day)
+    tables_list_raw = cursor.execute('SELECT * FROM tables').fetchall()
+    tables_occupied_list_raw = cursor.execute('SELECT table_size, date FROM booking WHERE date>(?) AND date<(?);',(date,date+86400000)).fetchall()
+    connection.close()
+    tables_list = []
+    for row in tables_list_raw:
+        tables_list.append(row['id'])
+    tables_occupied_list = {}
+    result = {}
+    for row in hour_list :
+        tables_occupied_list[row*60000+date] = []
+        result[row*60000+date] = False
+    for row in tables_occupied_list_raw:
+        if row['date'] in tables_occupied_list.keys() :
+            tables_occupied_list[row['date']].append(row['table_size'])
+    for key in tables_occupied_list :
+        if len(tables_occupied_list[key]) == len(tables_list):
+            for i in range(key-5400000,key+5400000,900000):
+                if(i in result) :
+                    result[i] = True
+    return result
 
 def is_booking_available(user_id,table_id,date):
     connection = get_connection()

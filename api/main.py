@@ -49,7 +49,6 @@ def get_user():
 
     if id:
         user = methods.get_user_information(id)
-        # user = methods.get_one_with_params('users','id', id)
     elif name:  
         user = methods.get_one_with_params('users','name',name)
          
@@ -98,6 +97,14 @@ def tables_availables_by_date():
     tables_list = methods.get_tables_information(date)
     return jsonify(tables_list),200
 
+@app.route('/tables/size-available',methods=['GET'])
+def tables_size_availables_by_date():
+    date = int(request.args.get('date'))
+    if not date:
+        return jsonify({'message':"Please provide a parameters table_id and date"}),400
+    tables_list = methods.is_fullDate_valide(date)
+    return jsonify(tables_list),200
+
 @app.route('/table', methods=['GET'])
 def table():
     id = request.args.get('id')
@@ -132,17 +139,7 @@ def openingTimes():
 @app.route('/opening-times/open-days',methods=['GET'])
 def openDays():
     openDays_list = methods.get_openingTime_days_list()
-    list = []
-    filterd_list = []
-    for row in openDays_list:
-        if row['id'] in list:
-            if row['id'] == 7:
-                filterd_list.append(0)
-            else :
-                filterd_list.append(row['id'])
-        else :
-            list.append(row['id'])
-    return jsonify(filterd_list)
+    return jsonify(openDays_list)
 
 @app.route('/day/<id>')
 def getDay_by_id(id):
@@ -152,11 +149,7 @@ def getDay_by_id(id):
 @app.route('/day/list/<id>')
 def getDay_by_id_list(id):
     data = methods.get_day_openingTime(id)
-    list = []
-    for hours in data:
-        for i in range(hours['start_time'],hours['end_time']-15,15):
-            list.append(i)
-    return jsonify(list)
+    return jsonify(data)
 
 @app.route('/days')
 def getAllDays():
@@ -197,14 +190,14 @@ def bookings():
         return jsonify(bookings), 200
     elif request.method == "POST":
         req_data = request.get_json()
-        result = methods.add_booking(req_data['user_id'],req_data['user_name'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        result = methods.add_booking(req_data['user_id'],req_data['user_name'],req_data['table_id'],req_data['table_size'],req_data['date'],req_data['customers_nbr'],req_data['status'])
         if result['status'] == "invalid":
             return jsonify(result), 409
         else:
             return jsonify(result), 201
     elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.update_booking_with_id(req_data['id'],req_data['table_id'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        result = methods.update_booking_with_id(req_data['id'],req_data['table_id'],req_data['table_size'],req_data['date'],req_data['customers_nbr'],req_data['status'])
         if result=='Success':
             return jsonify({'message': f"Booking #{req_data['id']} successfully updated !"}), 201
         elif result == 'TooSmall':
