@@ -7,7 +7,7 @@ import operator
 app = Flask(__name__)
 CORS(app)
 
-methods.init()
+# methods.init()
 
 # USERS
 @app.route('/users',methods=['GET','POST','PUT','DELETE'])
