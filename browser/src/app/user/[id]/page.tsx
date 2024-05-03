@@ -1,6 +1,7 @@
 'use client';
 import Booking_CustomersNbr from '@/components/booking_components/Booking_CustomersNbr';
 import Booking_Day from '@/components/booking_components/Booking_Day';
+import Booking_Tables from '@/components/booking_components/Booking_Tables';
 import { Modal } from '@/components/Modal';
 import { formatTime } from '@/components/openingDayCard/OpeningDayCard';
 import useFetch from '@/utils/useFetch';
@@ -24,20 +25,6 @@ type booking = {
    status: string;
    table_id: number;
 };
-
-type tables_info = {
-   bookings: {
-      booking_id: number;
-      current_date: string;
-      customers_nbr: number;
-      date: number;
-      status: string;
-      user_id: number;
-   }[];
-   table_id: number;
-   table_name: string;
-   table_size: number;
-}[];
 
 type selectedDate = { date: number; day: number };
 
@@ -97,7 +84,7 @@ const User = ({ params }: { params: { id: string } }) => {
    const { data: user, isLoading: iL_user } = useFetch<data_user>(
       `http://127.0.0.1:5000/user?id=${params.id}`
    );
-   const [tablesList, setTablesList] = useState<tables_info>();
+   // const [tablesList, setTablesList] = useState<tables_info[]>();
 
    useEffect(() => {
       fetch('http://127.0.0.1:5000/opening-times/open-days')
@@ -111,18 +98,6 @@ const User = ({ params }: { params: { id: string } }) => {
    const [tableInfo, setTableInfo] = useState<{ size: number; id: number }>();
    const [alert, setAlert] = useState('');
    const [open, setOpen] = useState(false);
-
-   useEffect(() => {
-      if (date && date.date && hour) {
-         fetch(
-            `http://127.0.0.1:5000/tables/available?date=${date.date + hour}`
-         )
-            .then((res) => res.json())
-            .then((data) => {
-               setTablesList(data);
-            });
-      }
-   }, [date, hour]);
 
    const handleSubmit = (
       status: string,
@@ -337,46 +312,13 @@ const User = ({ params }: { params: { id: string } }) => {
                      setcustomerNbr={setcustomerNbr}
                   />
                ) : !tableInfo ? (
-                  <div className="p-5 flex justify-center flex-wrap gap-3">
-                     {tablesList &&
-                        tablesList.map((table, index) => {
-                           if (
-                              table.table_size < customerNbr ||
-                              table.bookings.length > 0
-                           ) {
-                              return (
-                                 <div
-                                    className={`p-2  border rounded-lg border-gray-300 bg-gray-100 cursor-not-allowed opacity-60 flex flex-col items-center`}
-                                    key={index}
-                                 >
-                                    <p>{table.table_name}</p>
-                                    <p>{table.table_size} Places</p>
-                                 </div>
-                              );
-                           } else {
-                              return (
-                                 <div
-                                    className={`p-2  border rounded-lg border-gray-300 hover:bg-gray-100 cursor-pointer flex flex-col items-center`}
-                                    key={index}
-                                    onClick={() => {
-                                       handleSubmit(
-                                          'pending',
-                                          table.table_id,
-                                          table.table_size
-                                       );
-                                       setTableInfo({
-                                          id: table.table_id,
-                                          size: table.table_size,
-                                       });
-                                    }}
-                                 >
-                                    <p>{table.table_name}</p>
-                                    <p>{table.table_size} Places</p>
-                                 </div>
-                              );
-                           }
-                        })}
-                  </div>
+                  <Booking_Tables
+                     date={date}
+                     hour={hour}
+                     customerNbr={customerNbr}
+                     setTableInfo={setTableInfo}
+                     handleSubmit={handleSubmit}
+                  />
                ) : (
                   <div className="p-5 flex flex-col items-center gap-5">
                      <h3 className="text-center font-medium text-lg">Résumé</h3>
@@ -420,7 +362,6 @@ const User = ({ params }: { params: { id: string } }) => {
                )}
             </div>
          )}
-         <div className="absolute"></div>
          <Modal open={open}>
             {alert === 'time_out' ? (
                <div className="flex flex-col items-center gap-4">

@@ -61,6 +61,15 @@ const Bookings = () => {
                      className=" relative flex justify-center gap-5"
                   >
                      <div className="w-80 p-3 flex flex-col gap-4 border-2 border-gray-400 rounded-xl">
+                        <div
+                           className={`self-center w-fit p-2 rounded-lg text-transform: capitalize ${
+                              booking.status === 'validate'
+                                 ? 'bg-green-300'
+                                 : 'bg-amber-300'
+                           } text-center`}
+                        >
+                           {booking.status}
+                        </div>
                         <div className="flex flex-col">
                            <h3 className="text-xl font-medium">
                               Réservation #{booking.id}

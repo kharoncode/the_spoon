@@ -60,7 +60,7 @@ export default function Home() {
                   users &&
                   users.map((el, index) => {
                      return (
-                        <Link href={`/user/${el.id}`} key={index}>
+                        <Link href={`/user/${el.id}`} key={`${el.id}-${index}`}>
                            {el.name}
                         </Link>
                      );
@@ -74,8 +74,8 @@ export default function Home() {
             <div className="flex justify-between flex-wrap gap-5">
                {!iL_ot &&
                   data_ot &&
-                  days_list.map((day) => (
-                     <div key={day} className="flex gap-2">
+                  days_list.map((day, index) => (
+                     <div key={`${day}-${index}`} className="flex gap-2">
                         <h3>{day.toUpperCase()} :</h3>
                         {data_ot[day][0].content === 'closed' &&
                         data_ot[day][1].content === 'closed' ? (
