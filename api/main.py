@@ -1,6 +1,10 @@
 from flask import Flask,jsonify,request
 from flask_cors import CORS
 import methods
+import users_methods
+import tables_methods
+import opening_times_methods
+import bookings_methods
 import operator
 
 
@@ -17,14 +21,14 @@ def users():
         return jsonify(users), 200
     elif request.method == "POST":
         req_data = request.get_json()
-        result = methods.add_user(req_data['name'])
+        result = users_methods.add_user(req_data['name'])
         if result['status'] == 'success':
             return jsonify({'id':result['id'],'message': f"Users {req_data['name']} successfully added !"}), 201
         else :
             return jsonify({"message":result['message'] }),409
     elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.update_user(req_data['id'],req_data['name'])
+        result = users_methods.update_user(req_data['id'],req_data['name'])
         if result=='Success':
             return jsonify({'message': f"User {req_data['name']} successfully updated !"}), 201
         elif result == "NameNotNull":
@@ -48,7 +52,7 @@ def get_user():
         return jsonify({'message':"Please provide a parameter (id, name)"}),400
 
     if id:
-        user = methods.get_user_information(id)
+        user = users_methods.get_user_information(id)
     elif name:  
         user = methods.get_one_with_params('users','name',name)
          
@@ -65,7 +69,7 @@ def tables():
         return jsonify(tables), 200
     elif request.method == "POST":
         req_data = request.get_json()
-        result = methods.add_table(req_data['name'],req_data['size'])
+        result = tables_methods.add_table(req_data['name'],req_data['size'])
         if result == 'Success':
             newList = methods.get_all('tables')
             return jsonify({"status":201,"result":newList}), 201
@@ -73,7 +77,7 @@ def tables():
             return jsonify({"status":409,"result":"The table name is already in use"}),409
     elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.update_table(req_data['id'],req_data['name'],req_data['size'])
+        result = tables_methods.update_table(req_data['id'],req_data['name'],req_data['size'])
         if result=='Success':
             return jsonify({'message': f"Table {req_data['name']} successfully updated !"}), 201
         elif result == 'NameNotNull':
@@ -94,7 +98,7 @@ def tables_availables_by_date():
     date = int(request.args.get('date'))
     if not date:
         return jsonify({'message':"Please provide a parameters table_id and date"}),400
-    tables_list = methods.get_tables_information(date)
+    tables_list = tables_methods.get_tables_information(date)
     return jsonify(tables_list),200
 
 @app.route('/tables/max-size-available',methods=['GET'])
@@ -102,7 +106,7 @@ def max_size_availables_by_date():
     date = int(request.args.get('date'))
     if not date:
         return jsonify({'message':"Please provide a parameters table_id and date"}),400
-    tables_list = methods.max_customer(date)
+    tables_list = tables_methods.max_customer(date)
     return jsonify(tables_list),200
 
 
@@ -136,27 +140,27 @@ def openingTimes():
         return jsonify(openingTimes), 200
     elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.update_openingTime(req_data)
+        result = opening_times_methods.update_openingTime(req_data)
         return jsonify(result), 201
 
 @app.route('/opening-times/open-days',methods=['GET'])
 def openDays():
-    openDays_list = methods.get_openingTime_days_list()
+    openDays_list = opening_times_methods.get_openingTime_days_list()
     return jsonify(openDays_list)
 
 @app.route('/day/<id>')
 def getDay_by_id(id):
-    data = methods.get_day_openingTime(id)
+    data = opening_times_methods.get_day_openingTime(id)
     return jsonify(data)
 
 @app.route('/day/list/<id>')
 def getDay_by_id_list(id):
-    data = methods.get_day_openingTime(id)
+    data = opening_times_methods.get_day_openingTime(id)
     return jsonify(data)
 
 @app.route('/days')
 def getAllDays():
-    data = methods.get_openingTime_for_each_days()
+    data = opening_times_methods.get_openingTime_for_each_days()
     return jsonify(data)
 
 @app.route('/days/list')
@@ -193,14 +197,14 @@ def bookings():
         return jsonify(bookings), 200
     elif request.method == "POST":
         req_data = request.get_json()
-        result = methods.add_booking(req_data['user_id'],req_data['user_name'],req_data['table_id'],req_data['table_size'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        result = bookings_methods.add_booking(req_data['user_id'],req_data['user_name'],req_data['table_id'],req_data['table_size'],req_data['date'],req_data['customers_nbr'],req_data['status'])
         if result['status'] == "invalid":
             return jsonify(result), 409
         else:
             return jsonify(result), 201
     elif request.method == "PUT":
         req_data = request.get_json()
-        result = methods.update_booking_with_id(req_data['id'],req_data['table_id'],req_data['table_size'],req_data['date'],req_data['customers_nbr'],req_data['status'])
+        result = bookings_methods.update_booking_with_id(req_data['id'],req_data['table_id'],req_data['table_size'],req_data['date'],req_data['customers_nbr'],req_data['status'])
         if result=='Success':
             return jsonify({'message': f"Booking #{req_data['id']} successfully updated !"}), 201
         elif result == 'TooSmall':
@@ -220,7 +224,7 @@ def bookings():
 def canceled_booking_by_date():
     date = request.args.get('date')
     if date:
-        result = methods.delete_booking_with_date(date)
+        result = bookings_methods.delete_booking_with_date(date)
         if result=='Success':
             return jsonify({"message":result}), 201
         else:
@@ -233,7 +237,7 @@ def is_hours_availables_by_date():
     date = int(request.args.get('date'))
     if not date:
         return jsonify({'message':"Please provide a parameters table_id and date"}),400
-    tables_list = methods.is_fullDate_valide(date)
+    tables_list = bookings_methods.is_fullDate_valide(date)
     return jsonify(tables_list),200
 
 if __name__ == '__main__':
