@@ -6,8 +6,9 @@
       />
    </svg>
 </div>
-<div>
-   <nav>
-      <div [routerLink]="['settings']" class="link">Settings</div>
-   </nav>
-</div>
+
+<nav>
+   <div [routerLink]="['settings']" class="link">Settings</div>
+   <div class="link" (click)="toggleLog()">Log In</div>
+</nav>
+<div class="form" *ngIf="isOpen">Log</div>

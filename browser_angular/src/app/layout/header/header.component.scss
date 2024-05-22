@@ -1,5 +1,6 @@
 :host {
    padding: 20px;
+   height: 80px;
    display: flex;
    justify-content: space-between;
 }
@@ -17,6 +18,12 @@
       width: 25px;
       filter: var(--filter-primary);
    }
+}
+
+nav {
+   display: flex;
+   align-items: center;
+   gap: 20px;
 }
 
 .link {
@@ -59,4 +66,10 @@
          transform: scale(1);
       }
    }
+}
+
+.form {
+   position: absolute;
+   top: 80px;
+   right: 0;
 }

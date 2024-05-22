@@ -10,6 +10,7 @@
             </div>
             <div
                *ngIf="
+                  day_ot[day] &&
                   day_ot[day][0].content === 'closed' &&
                   day_ot[day][1].content === 'closed'
                "
