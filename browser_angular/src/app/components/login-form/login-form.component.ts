@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { NgClass, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import {
    FormControl,
@@ -11,7 +11,7 @@ import {
 @Component({
    selector: 'app-login-form',
    standalone: true,
-   imports: [NgClass, FormsModule, ReactiveFormsModule],
+   imports: [NgClass, NgIf, FormsModule, ReactiveFormsModule],
    templateUrl: './login-form.component.html',
    styleUrl: './login-form.component.scss',
 })
