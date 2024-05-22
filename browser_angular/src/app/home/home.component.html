@@ -1,6 +1,24 @@
 <div class="container">
    <div class="container-bg"></div>
-   <h2>Discover and book the best restaurant</h2>
+   <div class="container-title">
+      <h2>Discover and book the best restaurant</h2>
+      <div class="opening">
+         <div class="opening-item" *ngFor="let day of days_list">
+            <h3>{{ day.toUpperCase() }} :</h3>
+            <div *ngFor="let content of day_ot[day]">
+               <p *ngIf="content.content !== 'closed'">{{ content.content }}</p>
+            </div>
+            <div
+               *ngIf="
+                  day_ot[day][0].content === 'closed' &&
+                  day_ot[day][1].content === 'closed'
+               "
+            >
+               <p>Fermé</p>
+            </div>
+         </div>
+      </div>
+   </div>
    <img src="../../assets/png/food.png" alt="" />
    <div class="container-form">
       <app-login-form></app-login-form>

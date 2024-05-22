@@ -1,4 +1,22 @@
+@font-face {
+   font-family: 'Raleway';
+   src: url('./assets/font/Raleway/static/Raleway-Bold.ttf');
+   font-weight: bold;
+}
+@font-face {
+   font-family: 'Raleway';
+   src: url('./assets/font/Raleway/static/Raleway-Italic.ttf');
+   font-weight: italic;
+}
+@font-face {
+   font-family: 'Raleway';
+   src: url('./assets/font/Raleway/static/Raleway-Medium.ttf');
+   font-weight: normal;
+}
+
 :root {
+   --font-family: 'Raleway', arial, sans-serif;
+
    --color-primary: #00665c;
 
    --filter-primary: invert(24%) sepia(94%) saturate(807%) hue-rotate(137deg)
@@ -17,6 +35,7 @@ a {
 }
 body {
    height: 91svh;
+   font-family: var(--font-family);
 }
 
 main {

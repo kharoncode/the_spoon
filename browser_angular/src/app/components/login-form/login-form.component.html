@@ -1,4 +1,56 @@
-<form action="">
-   <label for="login">Login</label>
-   <input type="text" id="login" name="login" />
+<form [formGroup]="loginForm" (submit)="handleSubmit($event)">
+   <div class="input-text--container">
+      <input
+         [ngClass]="{
+            invalid:
+               loginForm.controls['login'].invalid &&
+               loginForm.controls['login'].touched
+         }"
+         (focus)="onFocus('login', true)"
+         (focusout)="onFocus('login', false)"
+         type="text"
+         id="login"
+         name="login"
+         formControlName="login"
+      />
+      <label
+         [ngClass]="{
+            focus: loginForm.value.login !== '' || isFocus.login
+         }"
+         for="login"
+         >Login</label
+      >
+   </div>
+   <div class="input-text--container">
+      <input
+         [ngClass]="{
+            invalid:
+               loginForm.controls['password'].invalid &&
+               loginForm.controls['password'].touched
+         }"
+         (focus)="onFocus('password', true)"
+         (focusout)="onFocus('password', false)"
+         type="password"
+         id="password"
+         name="password"
+         formControlName="password"
+      />
+      <label
+         [ngClass]="{
+            focus: loginForm.value.password !== '' || isFocus.password
+         }"
+         for="password"
+         >Password</label
+      >
+   </div>
+   <div class="input-checkbox--container">
+      <input
+         type="checkbox"
+         name="rememberMe"
+         id="rememberMe"
+         formControlName="rememberMe"
+      />
+      <label for="rememberMe">Remember me</label>
+   </div>
+   <button class="submit" type="submit">SignIn</button>
 </form>
