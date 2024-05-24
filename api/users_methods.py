@@ -2,8 +2,10 @@ import methods
 
 # USERS
 class user :
-    def __init__(self, name):
+    def __init__(self, name, mail, phone):
         self.name = name
+        self.mail = mail
+        self.phone = phone
 
 def add_user(name):
     connection = methods.get_connection()
@@ -44,7 +46,8 @@ def get_user_information(id):
         user_info_raw = cursor.execute('''
             SELECT 
                 u.id, 
-                u.name, 
+                u.name,
+                u.mail,
                 b.id AS booking_id, 
                 b.table_id, b.date, 
                 b.customers_nbr, 
@@ -59,6 +62,7 @@ def get_user_information(id):
         user_info = {
             'user_id': user['id'],
             'user_name': user['name'],
+            'user_mail':user['mail'],
             'bookings': [],
             'bookings_list':[]}
         

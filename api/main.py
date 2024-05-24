@@ -13,6 +13,15 @@ CORS(app)
 
 # methods.init()
 
+
+#RESTAURANTS
+@app.route('/restaurants',methods=['GET','POST','PUT'])
+def restaurants():
+    if request.method == 'GET':
+        restaurants = methods.get_all('restaurants')
+        return jsonify(restaurants),200
+
+
 # USERS
 @app.route('/users',methods=['GET','POST','PUT','DELETE'])
 def users():
