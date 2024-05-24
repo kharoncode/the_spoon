@@ -16,3 +16,11 @@ export type Opening = {
       }
    ];
 };
+
+export type Restaurant = {
+   address: string;
+   cuisine: string;
+   id: number;
+   name: string;
+   phone: number;
+};

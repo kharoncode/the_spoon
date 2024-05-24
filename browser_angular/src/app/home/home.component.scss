@@ -16,6 +16,12 @@
    align-items: center;
    background-color: var(--color-primary);
    overflow: hidden;
+   &-subContainer {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+   }
    &-bg {
       position: absolute;
       background: linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
@@ -46,6 +52,25 @@
       right: -130px;
       height: 400px;
       z-index: 100;
+   }
+}
+
+.info {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   &-title {
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+   }
+   &-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+   }
+   svg {
+      fill: currentColor;
+      width: 1rem;
    }
 }
 

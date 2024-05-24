@@ -13,9 +13,7 @@ export class LoginModalComponent {
    @Input() isOpen: boolean;
    @Output() setIsOpen = new EventEmitter<boolean>();
 
-   constructor() {
-      console.log(this.isOpen);
-   }
+   constructor() {}
 
    toggleLog(bool: boolean) {
       this.setIsOpen.emit(bool);
