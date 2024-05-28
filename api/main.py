@@ -6,6 +6,7 @@ import tables_methods
 import opening_times_methods
 import bookings_methods
 import operator
+import restaurants_methods
 
 
 app = Flask(__name__)
@@ -15,11 +16,15 @@ CORS(app)
 
 
 #RESTAURANTS
-@app.route('/restaurants',methods=['GET','POST','PUT'])
+@app.route('/restaurants',methods=['GET','PUT'])
 def restaurants():
     if request.method == 'GET':
         restaurants = methods.get_all('restaurants')
         return jsonify(restaurants),200
+    if request.method == 'PUT':
+        req_data = request.get_json()
+        restaurants = restaurants_methods.update_restaurant(req_data['id'],req_data['name'],req_data['address'],req_data['phone'],req_data['cuisine'])
+        return jsonify(restaurants),201
 
 
 # USERS
