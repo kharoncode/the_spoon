@@ -1,1 +1,33 @@
-<p>settings works!</p>
+<nav>
+   <div
+      routerLinkActive="isActive"
+      [routerLink]="['/settings/information']"
+      class="link"
+   >
+      Information
+   </div>
+   <div
+      routerLinkActive="isActive"
+      [routerLink]="['/settings/opening']"
+      class="link"
+   >
+      Horaires
+   </div>
+   <div
+      routerLinkActive="isActive"
+      [routerLink]="['/settings/option']"
+      class="link"
+   >
+      Option
+   </div>
+   <div
+      routerLinkActive="isActive"
+      [routerLink]="['/settings/booking']"
+      class="link"
+   >
+      Réservations
+   </div>
+</nav>
+<div class="outlet">
+   <router-outlet />
+</div>

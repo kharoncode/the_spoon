@@ -15,6 +15,10 @@ export class RestaurantService {
       return this.http.get<Restaurant[]>(this.restaurantsUrl);
    }
 
+   putRestaurant(body: Restaurant): Observable<Restaurant[]> {
+      return this.http.put<Restaurant[]>(this.restaurantsUrl, body);
+   }
+
    getOpening(): Observable<Opening> {
       return this.http.get<Opening>(this.openingUrl);
    }

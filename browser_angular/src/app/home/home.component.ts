@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
       name: '',
       address: '',
       cuisine: '',
-      phone: 0,
+      phone: '',
       id: 0,
    };
 

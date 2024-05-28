@@ -22,5 +22,5 @@ export type Restaurant = {
    cuisine: string;
    id: number;
    name: string;
-   phone: number;
+   phone: string;
 };

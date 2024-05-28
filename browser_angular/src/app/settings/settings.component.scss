@@ -1,0 +1,26 @@
+:host {
+   display: flex;
+   justify-content: space-between;
+}
+
+nav {
+   width: 100px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 20px;
+}
+
+.link {
+   cursor: pointer;
+}
+
+.outlet {
+   width: 100%;
+   display: flex;
+   justify-content: center;
+}
+
+.isActive {
+   color: red;
+}

@@ -1,0 +1,29 @@
+<form [formGroup]="restaurantForm" (submit)="handleSubmit($event)">
+   <div class="inputContenaire">
+      <label for="name">Nom</label>
+      <input formControlName="name" type="text" id="name" name="name" />
+   </div>
+   <div class="inputContenaire">
+      <label for="name">Adresse</label>
+      <input
+         formControlName="address"
+         type="text"
+         id="address"
+         name="address"
+      />
+   </div>
+   <div class="inputContenaire">
+      <label for="name">Téléphone</label>
+      <input formControlName="phone" type="text" id="phone" name="phone" />
+   </div>
+   <div class="inputContenaire">
+      <label for="name">Cuisine</label>
+      <input
+         formControlName="cuisine"
+         type="text"
+         id="cuisine"
+         name="cuisine"
+      />
+   </div>
+   <button type="submit">Valider</button>
+</form>
