@@ -9,8 +9,8 @@ def get_connection():
 def init():
     connection = get_connection()
     cursor = connection.cursor()
-    # cursor.execute("DROP TABLE restaurants;")
-    cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE, mail VARCHAR(30) NOT NULL UNIQUE, password VARCHAR(30) NOT NULL UNIQUE);")
+    # cursor.execute("DROP TABLE users;")
+    cursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, firstName VARCHAR(20) NOT NULL, lastName VARCHAR(20), mail VARCHAR(30) NOT NULL UNIQUE, phone VARCHAR(20) NOT NULL, password VARCHAR(30) NOT NULL);")
     cursor.execute("CREATE TABLE IF NOT EXISTS tables (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE, size INTEGER NOT NULL);")
     cursor.execute("CREATE TABLE IF NOT EXISTS daysOfTheWeek (id INTEGER PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE);")
     cursor.execute("CREATE TABLE IF NOT EXISTS openingTime (id INTEGER PRIMARY KEY, day_id INTEGER, day_time VARCHAR(20), start_time INTEGER, end_time INTEGER, content VARCHAR(20), FOREIGN KEY (day_id) REFERENCES daysOfTheWeek(id));")
@@ -21,6 +21,7 @@ def init():
     # cursor.execute("INSERT INTO daysOfTheWeek (name) VALUES ('lundi'), ('mardi'), ('mercredi'), ('jeudi'),('vendredi'), ('samedi'),('dimanche');")
     # cursor.execute("INSERT INTO openingTime (day_id, day_time, start_time, end_time, content) VALUES (1, 'lunch', 660, 840, '11:00-14:00'), (1, 'dinner', 660, 1260, '18:00-21:00'),(2, 'lunch', 660, 840, '11:00-14:00'), (2, 'dinner', 660, 1260, '18:00-21:00'),(3, 'lunch', 660, 840, '11:00-14:00'), (3, 'dinner', 660, 1260, '18:00-21:00'),(4, 'lunch', 660, 840, '11:00-14:00'), (4, 'dinner', 660, 1260, '18:00-21:00'),(5, 'lunch', 660, 840, '11:00-14:00'), (5, 'dinner', 660, 1260, '18:00-21:00'),(6, 'lunch', 660, 840, '11:00-14:00'), (6, 'dinner', 660, 1260, '18:00-21:00'),(7, 'lunch', 0, 0, 'closed'),(7, 'dinner', 0, 0, 'closed');")
     # cursor.execute("INSERT INTO restaurants (name,address,phone,cuisine) VALUES ('My Restaurant','1 impasse des Marguerites','0033123456789','HomeMade');")
+    # cursor.execute("INSERT INTO users (firstName,lastName,mail,phone,password) VALUES ('Sharon','Norahk', 'sh@ron.com','0033987654321','YOP')")
     # connection.commit()
     connection.close()
 

@@ -2,8 +2,9 @@ import methods
 
 # USERS
 class user :
-    def __init__(self, name, mail, phone):
-        self.name = name
+    def __init__(self, firstName,lastName, mail, phone):
+        self.firstName = firstName
+        self.lastName = lastName
         self.mail = mail
         self.phone = phone
 
