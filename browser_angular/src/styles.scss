@@ -42,8 +42,21 @@ body {
 main {
    box-shadow: rgba(126, 126, 126, 0.25) 0px 30px 60px -12px inset,
       rgba(185, 185, 185, 0.3) 0px 18px 36px -18px inset;
-   padding: 2.5rem;
    width: 100%;
    height: 100%;
    background: #ffffff;
+}
+
+.btn {
+   cursor: pointer;
+   font-size: 1.2rem;
+   font-weight: 600;
+   padding: 10px;
+   border-radius: 10px;
+   border-style: none;
+   color: white;
+   background: var(--color-primary);
+   &:hover {
+      background-color: rgba(0, 77, 69);
+   }
 }

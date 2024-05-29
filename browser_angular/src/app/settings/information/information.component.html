@@ -1,29 +1,38 @@
-<form [formGroup]="restaurantForm" (submit)="handleSubmit($event)">
-   <div class="inputContenaire">
-      <label for="name">Nom</label>
-      <input formControlName="name" type="text" id="name" name="name" />
+<h1 class="title">Informations du Restaurant</h1>
+<form class="form" [formGroup]="restaurantForm" (submit)="handleSubmit($event)">
+   <div class="form-item">
+      <h2 class="form-item--subtitle">Restaurant</h2>
+      <div class="form-inputContainer">
+         <label for="name">Nom</label>
+         <input formControlName="name" type="text" id="name" name="name" />
+      </div>
+
+      <div class="form-inputContainer">
+         <label for="name">Cuisine</label>
+         <input
+            formControlName="cuisine"
+            type="text"
+            id="cuisine"
+            name="cuisine"
+         />
+      </div>
    </div>
-   <div class="inputContenaire">
-      <label for="name">Adresse</label>
-      <input
-         formControlName="address"
-         type="text"
-         id="address"
-         name="address"
-      />
+   <div class="form-item">
+      <h2 class="form-item--subtitle">Contact</h2>
+      <div class="form-inputContainer">
+         <label for="name">Adresse</label>
+         <input
+            formControlName="address"
+            type="text"
+            id="address"
+            name="address"
+         />
+      </div>
+      <div class="form-inputContainer">
+         <label for="name">Téléphone</label>
+         <input formControlName="phone" type="text" id="phone" name="phone" />
+      </div>
    </div>
-   <div class="inputContenaire">
-      <label for="name">Téléphone</label>
-      <input formControlName="phone" type="text" id="phone" name="phone" />
-   </div>
-   <div class="inputContenaire">
-      <label for="name">Cuisine</label>
-      <input
-         formControlName="cuisine"
-         type="text"
-         id="cuisine"
-         name="cuisine"
-      />
-   </div>
-   <button type="submit">Valider</button>
+
+   <button class="btn" type="submit">Valider</button>
 </form>
