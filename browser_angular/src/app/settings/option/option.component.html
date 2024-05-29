@@ -1,1 +1,14 @@
-<p>option works!</p>
+<div class="container">
+   <div *ngFor="let item of usersList" class="user">
+      <h3>{{ item.firstName }} {{ item.lastName }}</h3>
+      <p>Mail : {{ item.mail }}</p>
+      <p>Phone : {{ item.phone }}</p>
+   </div>
+</div>
+<div class="container">
+   <div *ngFor="let item of tablesList" class="user">
+      <h3>#{{ item.id }}</h3>
+      <p>Name : {{ item.name }} pers.</p>
+      <p>Size : {{ item.size }} pers.</p>
+   </div>
+</div>

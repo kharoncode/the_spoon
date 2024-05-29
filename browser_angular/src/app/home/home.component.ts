@@ -40,7 +40,7 @@ export class HomeComponent implements OnInit {
             console.log('---ERROR---', error);
          },
       });
-      this.restaurantService.getResaurant().subscribe({
+      this.restaurantService.getRestaurant().subscribe({
          next: (restaurantsList) => {
             this.restaurant = restaurantsList[0];
          },

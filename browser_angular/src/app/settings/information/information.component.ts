@@ -82,7 +82,7 @@ export class InformationComponent implements OnInit {
    }
 
    ngOnInit(): void {
-      this.restaurant_service.getResaurant().subscribe({
+      this.restaurant_service.getRestaurant().subscribe({
          next: (restaurantsList) => {
             this.restaurant = restaurantsList[0];
             this.restaurantForm.patchValue({

@@ -11,7 +11,7 @@ export class RestaurantService {
    private restaurantsUrl = 'http://127.0.0.1:5000/restaurants';
    constructor(private http: HttpClient) {}
 
-   getResaurant(): Observable<Restaurant[]> {
+   getRestaurant(): Observable<Restaurant[]> {
       return this.http.get<Restaurant[]>(this.restaurantsUrl);
    }
 
