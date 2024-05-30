@@ -32,4 +32,9 @@ export class OptionComponent implements OnInit {
          },
       });
    }
+
+   handleAddTableSubmit($event: Event) {
+      $event.preventDefault();
+      console.log($event);
+   }
 }

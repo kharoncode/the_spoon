@@ -1,11 +1,57 @@
 :host {
    display: flex;
+   width: 100%;
    flex-direction: column;
+   align-items: center;
    gap: 40px;
+   & svg {
+      width: 20px;
+      cursor: pointer;
+      &.delete:hover {
+         fill: rgb(197, 4, 4);
+      }
+      &.edit:hover {
+         fill: var(--color-primary);
+      }
+   }
 }
 
 .container {
+   padding: 20px;
+   width: 100%;
+   max-width: 500px;
+   border: solid 1px #ccc;
+   border-radius: 25px;
    display: flex;
    flex-direction: column;
-   gap: 20px;
+   gap: 15px;
+   &-subtitle {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+   }
+}
+
+.item {
+   padding: 10px;
+   display: flex;
+   align-items: center;
+   gap: 30px;
+   border-radius: 10px;
+   &:nth-child(even) {
+      background-color: var(--color-grey);
+   }
+   &-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      & span {
+         font-size: 0.9rem;
+      }
+   }
+   &-settings {
+      margin-left: auto;
+      display: flex;
+      gap: 20px;
+   }
 }
