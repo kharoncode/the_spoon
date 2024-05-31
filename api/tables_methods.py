@@ -20,7 +20,7 @@ def update_table(id,name,size):
     table = cursor.execute('SELECT * FROM tables WHERE id=(?)',(id,)).fetchone()
     if table:
         new_name = cursor.execute('SELECT * FROM tables WHERE name=(?)',(name,)).fetchone()
-        if not new_name:
+        if not new_name or new_name['id'] == id :
             cursor.execute('UPDATE tables SET name=(?), size=(?) WHERE id=(?)', (name,size,id,))
             connection.commit()
             connection.close()

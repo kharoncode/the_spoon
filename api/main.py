@@ -35,9 +35,9 @@ def users():
         return jsonify(users), 200
     elif request.method == "POST":
         req_data = request.get_json()
-        result = users_methods.add_user(req_data['name'])
+        result = users_methods.add_user(req_data['firstName'],req_data['lastName'],req_data['mail'],req_data['phone'],req_data['password'])
         if result['status'] == 'success':
-            return jsonify({'id':result['id'],'message': f"Users {req_data['name']} successfully added !"}), 201
+            return jsonify({'id':result['id'],'message': f"Users {req_data['mail']} successfully added !"}), 201
         else :
             return jsonify({"message":result['message'] }),409
     elif request.method == "PUT":
@@ -86,16 +86,17 @@ def tables():
         result = tables_methods.add_table(req_data['name'],req_data['size'])
         if result == 'Success':
             newList = methods.get_all('tables')
-            return jsonify({"status":201,"result":newList}), 201
+            return jsonify(newList), 201
         else :
             return jsonify({"status":409,"result":"The table name is already in use"}),409
     elif request.method == "PUT":
         req_data = request.get_json()
         result = tables_methods.update_table(req_data['id'],req_data['name'],req_data['size'])
         if result=='Success':
-            return jsonify({'message': f"Table {req_data['name']} successfully updated !"}), 201
+            tables = methods.get_all('tables')
+            return jsonify(tables), 201
         elif result == 'NameNotNull':
-            return jsonify({'message': "Table name is already in use !"}), 409
+            return jsonify({"status":409,"result":"Ce nom de table est déjà utilisé."}), 409
         else:
             return jsonify({"message":"Table not found !"}),404
     elif request.method == 'DELETE':

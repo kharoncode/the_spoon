@@ -8,18 +8,18 @@ class user :
         self.mail = mail
         self.phone = phone
 
-def add_user(name):
+def add_user(firstName,lastName,mail,phone,password):
     connection = methods.get_connection()
     cursor = connection.cursor()
-    user = cursor.execute('SELECT * FROM users WHERE name=(?)',(name,)).fetchone()
+    user = cursor.execute('SELECT * FROM users WHERE mail=(?)',(mail,)).fetchone()
     if not user:
-        cursor.execute('INSERT INTO users (name) VALUES (?)', (name,))
+        cursor.execute('INSERT INTO users (firstName,lastName,mail,phone,password) VALUES (?,?,?,?,?)', (firstName,lastName,mail,phone,password,))
         connection.commit()
         connection.close()
         return {"status":"success","id":cursor.lastrowid}
     else:
         connection.close()
-        return {"status":"error","message":"The user name is already in use"}
+        return {"status":"error","message":"This Mail is already in use"}
 
 def update_user(id,name):
     connection = methods.get_connection()
