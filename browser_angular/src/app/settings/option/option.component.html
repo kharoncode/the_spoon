@@ -1,7 +1,7 @@
 <div class="container">
    <h2 class="container-subtitle">Utilisateurs :</h2>
    <div *ngFor="let item of usersList" class="item">
-      <h3>{{ item.firstName }} {{ item.lastName }}</h3>
+      <h3>{{ item.firstName }} <br />{{ item.lastName }}</h3>
       <div class="item-info">
          <p><span>Mail : </span>{{ item.mail }}</p>
          <p><span>Phone : </span>{{ item.phone }}</p>
@@ -17,6 +17,7 @@
             />
          </svg>
          <svg
+            (click)="handleDelete(item.id, 'users')"
             class="delete"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
@@ -32,13 +33,13 @@
 <div class="container">
    <h2 class="container-subtitle">Tables :</h2>
    <div *ngFor="let item of tablesList" class="item">
-      <h3>#{{ item.id }}</h3>
+      <h3>{{ item.name }}</h3>
       <div class="item-info">
-         <p><span>Nom : </span>{{ item.name }}</p>
          <p><span>Taille : </span>{{ item.size }} pers.</p>
       </div>
       <div class="item-settings">
          <svg
+            (click)="editTable(item)"
             class="edit"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
@@ -48,6 +49,7 @@
             />
          </svg>
          <svg
+            (click)="handleDelete(item.id, 'tables')"
             class="delete"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
@@ -58,22 +60,17 @@
          </svg>
       </div>
    </div>
-   <form (submit)="handleAddTableSubmit($event)">
-      <h2>Nouvelle Table</h2>
-      <div class="inputContainer">
-         <label for="name">Nom</label>
-         <input type="text" id="name" name="name" />
-      </div>
-      <div class="inputContainer">
-         <label for="size">Taille</label>
-         <input
-            type="number"
-            id="size"
-            name="size"
-            min="1"
-            [defaultValue]="1"
-         />
-      </div>
-      <button type="submit">Ajouter une table</button>
-   </form>
+   <app-table-form
+      [content]="{ title: 'Nouvelle Table', button: 'Ajouter une table' }"
+      [table]="{ id: 0, name: 'Nouvelle Table', size: 1 }"
+      [tableError]="tableError.add"
+      (handleSubmit)="handleAddTableSubmit($event)"
+   />
 </div>
+<app-modal [isOpen]="isOpen" (setIsOpen)="setOpen()"
+   ><app-table-form
+      [content]="{ title: undefined, button: 'Éditer la table' }"
+      [table]="tableSelected"
+      [tableError]="tableError.edit"
+      (handleSubmit)="handleEditTableSubmit($event)"
+/></app-modal>

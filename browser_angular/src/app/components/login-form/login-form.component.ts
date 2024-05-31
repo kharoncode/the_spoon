@@ -7,11 +7,19 @@ import {
    Validators,
    ReactiveFormsModule,
 } from '@angular/forms';
+import { UserService } from '../../services/user.service';
+import { ErrorMessageComponent } from '../error-message/error-message.component';
 
 @Component({
    selector: 'app-login-form',
    standalone: true,
-   imports: [NgClass, NgIf, FormsModule, ReactiveFormsModule],
+   imports: [
+      NgClass,
+      NgIf,
+      FormsModule,
+      ReactiveFormsModule,
+      ErrorMessageComponent,
+   ],
    templateUrl: './login-form.component.html',
    styleUrl: './login-form.component.scss',
 })
@@ -33,6 +41,8 @@ export class LoginFormComponent {
       password: false,
    };
 
+   constructor(private userService: UserService) {}
+
    handleSubmit($event: Event) {
       $event.preventDefault;
       const data = {
@@ -43,6 +53,19 @@ export class LoginFormComponent {
       if (!this.loginForm.valid) {
          return;
       }
+      this.userService
+         .postUser({
+            firstName: 'FirstName',
+            lastName: 'LastName',
+            mail: 'firstname@lastname.com',
+            phone: '0033612345678',
+            password: '1234',
+         })
+         .subscribe({
+            next: (user) => {
+               console.log(user);
+            },
+         });
       console.log(data);
       this.loginForm.reset();
    }

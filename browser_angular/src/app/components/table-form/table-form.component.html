@@ -1,0 +1,28 @@
+<form (submit)="handleFormSubmit($event)" [formGroup]="tableForm">
+   <h3 *ngIf="content.title">{{ content.title }}</h3>
+   <div class="inputContainer">
+      <label for="name">Nom</label>
+      <input formControlName="name" type="text" id="name" name="name" />
+   </div>
+   <div class="inputContainer">
+      <label for="size">Taille</label>
+      <input
+         formControlName="size"
+         type="number"
+         id="size"
+         name="size"
+         min="1"
+      />
+   </div>
+   <button
+      class="submit"
+      [ngClass]="{ submit_valid: tableForm.valid }"
+      type="submit"
+   >
+      {{ content.button }}
+   </button>
+   <app-error-message
+      *ngIf="tableError.isError"
+      [content]="tableError.message"
+   />
+</form>

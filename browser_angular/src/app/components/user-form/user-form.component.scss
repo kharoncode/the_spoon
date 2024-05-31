@@ -1,0 +1,52 @@
+form {
+   width: 500px;
+   margin-top: 20px;
+   padding: 20px;
+   border: solid 1px var(--color-grey);
+   border-radius: 10px;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+
+   & .inputContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+   }
+
+   & input {
+      padding: 5px 10px;
+      border-radius: 10px;
+      outline: none;
+   }
+
+   & button {
+      margin-top: 20px;
+   }
+}
+
+.submit {
+   width: 100%;
+   cursor: not-allowed;
+   font-size: 1.2rem;
+   font-weight: 600;
+   margin-top: auto;
+   padding: 10px;
+   border-radius: 10px;
+   border-style: none;
+   color: rgb(149, 155, 167);
+   background-color: rgb(236, 237, 239);
+   &_valid {
+      cursor: pointer;
+      color: white;
+      background: var(--color-primary);
+      &:hover {
+         background-color: rgba(0, 77, 69);
+      }
+   }
+}
+
+.tableError {
+   font-size: 0.8rem;
+   color: red;
+}

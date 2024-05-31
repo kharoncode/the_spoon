@@ -81,19 +81,7 @@ form {
    border-bottom: solid 2px rgb(203, 26, 35) !important;
 }
 
-.error {
-   margin-top: 3px;
-   color: rgb(203, 26, 35);
-   display: flex;
-   justify-content: space-between;
-   & span {
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      width: fit-content;
-      & svg {
-         width: 1rem;
-         fill: currentColor;
-      }
-   }
+.subscribe {
+   width: 100%;
+   text-align: center;
 }

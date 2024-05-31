@@ -1,0 +1,32 @@
+:host {
+   position: absolute;
+   top: 0;
+   right: 0;
+   z-index: 1000;
+}
+
+.modal {
+   background: rgb(255, 255, 255, 0.5);
+   height: 100svh;
+   width: 100svw;
+   &-container {
+      margin: auto;
+      top: 40svh;
+      width: fit-content;
+      position: relative;
+      padding: 20px;
+      background: white;
+      border: solid 2px var(--color-primary);
+      border-radius: 15px;
+   }
+   &-children {
+      padding: 20px;
+      width: 100%;
+   }
+   &--close {
+      position: absolute;
+      cursor: pointer;
+      top: 20px;
+      right: 20px;
+   }
+}
